@@ -1329,19 +1329,27 @@ document.getElementById('exportBtn').addEventListener('click', () => {
 // ── NAV ───────────────────────────────────────────────────────────────────────
 
 function navigateTo(page) {
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const activeBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
-  if (activeBtn) activeBtn.classList.add('active');
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const pageEl = document.getElementById('page-' + page);
-  if (pageEl) { pageEl.classList.add('active'); pageEl.scrollTop = 0; }
-  if (page === 'week')  renderWeek();
-  else if (page === 'stats') renderStats();
-  else if (page === 'edit')  renderEdit();
-  else if (page === 'today') renderToday();
+  try {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.querySelector('.nav-btn[data-page="' + page + '"]');
+    if (activeBtn) activeBtn.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const pageEl = document.getElementById('page-' + page);
+    if (pageEl) { pageEl.classList.add('active'); pageEl.scrollTop = 0; }
+    if (page === 'week')       renderWeek();
+    else if (page === 'stats') renderStats();
+    else if (page === 'edit')  renderEdit();
+    else if (page === 'today') renderToday();
+  } catch(e) { console.error('Nav error:', e); }
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn => {
+  // touchend fires before click on iOS — prevents 300ms delay and capture issues
+  btn.addEventListener('touchend', e => {
+    e.preventDefault();
+    navigateTo(btn.dataset.page);
+  });
+  // fallback for desktop / non-touch
   btn.addEventListener('click', e => {
     e.preventDefault();
     navigateTo(btn.dataset.page);
