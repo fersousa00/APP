@@ -1,4 +1,4 @@
-const CACHE = 'antifragil-v2';
+const CACHE = 'antifragil-v3';
 const ASSETS = ['./index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {

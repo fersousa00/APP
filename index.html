@@ -637,9 +637,32 @@ function load(key, def) {
 }
 function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
-let habits = load('af_habits', DEFAULT_HABITS);
-let logs = load('af_logs', {});
+let habits = sanitizeHabits(load('af_habits', DEFAULT_HABITS));
+let logs = sanitizeLogs(load('af_logs', {}));
 let theme = load('af_theme', 'light');
+
+function sanitizeHabits(value) {
+  if (!Array.isArray(value)) return [...DEFAULT_HABITS];
+  const valid = value.filter(h => h && typeof h === 'object' && h.id && h.name && h.type);
+  if (!valid.length) return [...DEFAULT_HABITS];
+  return valid.map(h => ({
+    id: String(h.id),
+    emoji: h.emoji || '⭐',
+    name: h.name || 'Hábito',
+    cat: ['rutina','trabajo','finanzas'].includes(h.cat) ? h.cat : 'rutina',
+    type: ['yn','num','time'].includes(h.type) ? h.type : 'yn',
+    unit: h.unit || '',
+    negative: !!h.negative
+  }));
+}
+
+function sanitizeLogs(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+// Guarda la versión saneada para evitar que datos antiguos rompan la app
+save('af_habits', habits);
+save('af_logs', logs);
 
 // current dates
 let currentDate = new Date();
@@ -1302,7 +1325,18 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
-renderToday();
+try {
+  renderToday();
+} catch (e) {
+  console.error('Initial render error:', e);
+  localStorage.removeItem('af_habits');
+  localStorage.removeItem('af_logs');
+  habits = [...DEFAULT_HABITS];
+  logs = {};
+  save('af_habits', habits);
+  save('af_logs', logs);
+  renderToday();
+}
 </script>
 </body>
 </html>
