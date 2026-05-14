@@ -1,5 +1,5 @@
-const CACHE = 'antifragil-v1';
-const ASSETS = ['./index.html', './manifest.json'];
+const CACHE = 'antifragil-v2';
+const ASSETS = ['./index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));

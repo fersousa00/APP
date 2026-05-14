@@ -59,18 +59,19 @@ body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   font-size: 15px;
   transition: background 0.2s, color 0.2s;
   overscroll-behavior: none;
+  position: fixed;
+  width: 100%;
 }
 
 /* TOPBAR */
 .topbar {
-  position: sticky; top: 0; z-index: 50;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 52px;
   background: var(--bg);
   border-bottom: 0.5px solid var(--border);
   padding: 0 18px;
@@ -92,7 +93,7 @@ body {
 
 /* BOTTOM NAV */
 .bottomnav {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; height: 56px;
   background: var(--surface);
   border-top: 0.5px solid var(--border);
   display: flex;
@@ -109,7 +110,7 @@ body {
 .nav-btn svg { width: 22px; height: 22px; stroke-width: 1.6; fill: none; stroke: currentColor; }
 
 /* PAGES */
-.page { display: none; flex: 1; overflow-y: auto; padding: 18px 18px 90px; }
+.page { display: none; position: fixed; top: 52px; left: 0; right: 0; bottom: 56px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 18px 18px 20px; }
 .page.active { display: block; }
 
 /* DATE NAV */
@@ -908,6 +909,7 @@ function getWeekStart(offset) {
 }
 
 function renderWeek() {
+  try {
   const weekStart = getWeekStart(weekOffset);
   const weekEnd = addDays(weekStart, 6);
   document.getElementById('weekTitle').textContent =
@@ -956,6 +958,7 @@ function renderWeek() {
 
   if (selectedWeekDay) renderWeekDetail(selectedWeekDay);
   else document.getElementById('weekDetail').innerHTML = '';
+  } catch(e) { console.error('Week render error:', e); }
 }
 
 function renderWeekDetail(key) {
@@ -1268,16 +1271,28 @@ document.getElementById('exportBtn').addEventListener('click', () => {
 
 // ── NAV ──────────────────────────────────────────────────────────────────────
 
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const page = btn.dataset.page;
+function navigateTo(page) {
+  try {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    const activeBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
+    const pageEl = document.getElementById('page-' + page);
+    if (pageEl) {
+      pageEl.classList.add('active');
+      pageEl.scrollTop = 0;
+    }
     if (page === 'week') renderWeek();
-    if (page === 'stats') renderStats();
-    if (page === 'edit') renderEdit();
+    else if (page === 'stats') renderStats();
+    else if (page === 'edit') renderEdit();
+    else if (page === 'today') renderToday();
+  } catch(e) { console.error('Nav error:', e); }
+}
+
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateTo(btn.dataset.page);
   });
 });
 
