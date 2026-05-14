@@ -75,7 +75,6 @@ body {
   background: var(--bg);
   border-bottom: 0.5px solid var(--border);
   padding: 0 18px;
-  height: 52px;
   display: flex; align-items: center; justify-content: space-between;
   transition: background 0.2s;
 }
@@ -314,15 +313,6 @@ body {
 .streak-lbl { font-size: 11px; color: var(--accent); margin-top: 2px; }
 .streak-best { font-size: 10px; color: var(--text3); margin-top: 2px; }
 
-.perfect-card {
-  background: var(--surface); border: 0.5px solid var(--border);
-  border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 16px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.perfect-left { display: flex; align-items: center; gap: 10px; }
-.perfect-val { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
-.perfect-lbl { font-size: 11px; color: var(--text3); }
-
 .bar-section { margin-bottom: 16px; }
 .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
 .bar-emoji { font-size: 14px; width: 22px; text-align: center; }
@@ -337,7 +327,6 @@ body {
   border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 8px;
 }
 .insight-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
-.insight-emoji { font-size: 16px; margin-right: 6px; }
 
 /* EDIT PAGE */
 .edit-list { margin-bottom: 16px; }
@@ -357,7 +346,6 @@ body {
 .badge-num { background: var(--accent-bg); color: var(--accent-text); }
 .badge-time { background: var(--surface2); color: var(--text2); }
 .badge-neg { background: var(--red-bg); color: var(--red-text); }
-.badge-cat { background: var(--surface2); color: var(--text3); }
 .edit-actions { display: flex; gap: 5px; flex-shrink: 0; }
 .action-btn {
   width: 28px; height: 28px; border-radius: 7px;
@@ -618,18 +606,18 @@ body {
 // ── DATA ────────────────────────────────────────────────────────────────────
 
 const DEFAULT_HABITS = [
-  { id:'h1', emoji:'🌅', name:'Me desperté', cat:'rutina', type:'time', negative:false },
-  { id:'h2', emoji:'🌙', name:'Me acosté', cat:'rutina', type:'time', negative:false },
-  { id:'h3', emoji:'🏃', name:'Ejercicio', cat:'rutina', type:'num', unit:'min', negative:false },
-  { id:'h4', emoji:'📚', name:'Lectura', cat:'rutina', type:'num', unit:'min', negative:false },
-  { id:'h5', emoji:'🥗', name:'He comido bien', cat:'rutina', type:'yn', negative:false },
-  { id:'h6', emoji:'💧', name:'Agua', cat:'rutina', type:'num', unit:'vasos', negative:false },
-  { id:'h7', emoji:'🎓', name:'Estudio', cat:'trabajo', type:'num', unit:'min', negative:false },
-  { id:'h8', emoji:'💼', name:'He aplicado a trabajo', cat:'trabajo', type:'yn', negative:false },
-  { id:'h9', emoji:'🏢', name:'Sitios aplicados', cat:'trabajo', type:'num', unit:'sitios', negative:false },
-  { id:'h10', emoji:'💰', name:'Tareas de finanzas', cat:'finanzas', type:'yn', negative:false },
-  { id:'h11', emoji:'📵', name:'Doomscrolling', cat:'rutina', type:'num', unit:'min', negative:true },
-  { id:'h12', emoji:'🍬', name:'Azúcar / comida basura', cat:'rutina', type:'yn', negative:true },
+  { id:'h1',  emoji:'🌅', name:'Me desperté',          cat:'rutina',   type:'time', negative:false },
+  { id:'h2',  emoji:'🌙', name:'Me acosté',             cat:'rutina',   type:'time', negative:false },
+  { id:'h3',  emoji:'🏃', name:'Ejercicio',             cat:'rutina',   type:'num',  unit:'min',    negative:false },
+  { id:'h4',  emoji:'📚', name:'Lectura',               cat:'rutina',   type:'num',  unit:'min',    negative:false },
+  { id:'h5',  emoji:'🥗', name:'He comido bien',        cat:'rutina',   type:'yn',   negative:false },
+  { id:'h6',  emoji:'💧', name:'Agua',                  cat:'rutina',   type:'num',  unit:'vasos',  negative:false },
+  { id:'h7',  emoji:'🎓', name:'Estudio',               cat:'trabajo',  type:'num',  unit:'min',    negative:false },
+  { id:'h8',  emoji:'💼', name:'He aplicado a trabajo', cat:'trabajo',  type:'yn',   negative:false },
+  { id:'h9',  emoji:'🏢', name:'Sitios aplicados',      cat:'trabajo',  type:'num',  unit:'sitios', negative:false },
+  { id:'h10', emoji:'💰', name:'Tareas de finanzas',    cat:'finanzas', type:'yn',   negative:false },
+  { id:'h11', emoji:'📵', name:'Doomscrolling',         cat:'rutina',   type:'num',  unit:'min',    negative:true },
+  { id:'h12', emoji:'🍬', name:'Azúcar / comida basura',cat:'rutina',   type:'yn',   negative:true },
 ];
 
 function load(key, def) {
@@ -637,18 +625,14 @@ function load(key, def) {
 }
 function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
-let habits = sanitizeHabits(load('af_habits', DEFAULT_HABITS));
-let logs = sanitizeLogs(load('af_logs', {}));
-let theme = load('af_theme', 'light');
-
 function sanitizeHabits(value) {
-  if (!Array.isArray(value)) return [...DEFAULT_HABITS];
+  if (!Array.isArray(value) || !value.length) return [...DEFAULT_HABITS];
   const valid = value.filter(h => h && typeof h === 'object' && h.id && h.name && h.type);
   if (!valid.length) return [...DEFAULT_HABITS];
   return valid.map(h => ({
     id: String(h.id),
     emoji: h.emoji || '⭐',
-    name: h.name || 'Hábito',
+    name: String(h.name || 'Hábito'),
     cat: ['rutina','trabajo','finanzas'].includes(h.cat) ? h.cat : 'rutina',
     type: ['yn','num','time'].includes(h.type) ? h.type : 'yn',
     unit: h.unit || '',
@@ -657,21 +641,30 @@ function sanitizeHabits(value) {
 }
 
 function sanitizeLogs(value) {
-  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  return (value && typeof value === 'object' && !Array.isArray(value)) ? value : {};
 }
 
-// Guarda la versión saneada para evitar que datos antiguos rompan la app
+let habits = sanitizeHabits(load('af_habits', DEFAULT_HABITS));
+let logs   = sanitizeLogs(load('af_logs', {}));
+let theme  = load('af_theme', 'light');
+
 save('af_habits', habits);
 save('af_logs', logs);
 
-// current dates
-let currentDate = new Date();
-currentDate.setHours(0,0,0,0);
-let weekOffset = 0;
+// ── STATE ────────────────────────────────────────────────────────────────────
+
+function today() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+let currentDate  = today();
+let weekOffset   = 0;
 let selectedWeekDay = null;
 let activeFilter = 'all';
-let statsPeriod = 'week';
-let editType = 'yn';
+let statsPeriod  = 'week';
+let editType     = 'yn';
 
 // ── THEME ────────────────────────────────────────────────────────────────────
 
@@ -691,13 +684,12 @@ applyTheme();
 function dateKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-function today() { const d = new Date(); d.setHours(0,0,0,0); return d; }
 function isToday(d) { return dateKey(d) === dateKey(today()); }
-function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
 
-const DAYS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const DAYS       = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const DAYS_SHORT = ['D','L','M','X','J','V','S'];
-const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const MONTHS     = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
 function formatDate(d) {
   return `${d.getDate()} de ${MONTHS[d.getMonth()]} · ${d.getFullYear()}`;
@@ -711,29 +703,41 @@ function saveLog(dateStr, key, val) {
   save('af_logs', logs);
 }
 
-// ── SCORE ────────────────────────────────────────────────────────────────────
+// ── SCORE ─────────────────────────────────────────────────────────────────────
+// A habit is "done" when:
+//   positive yn   → value is exactly true (boolean)
+//   positive num  → value > 0
+//   positive time → value is a non-empty string
+//   negative yn   → value is exactly false (boolean), i.e. the user consciously avoided it
+//   negative num  → value === 0 AND the log entry for that day exists at all
+//
+// Negative habits that have never been touched are NOT counted as done —
+// the user must actively record 0 to get credit for avoiding them.
+
+function isHabitDone(h, log) {
+  const v = log[h.id];
+  const logged = h.id in log; // user actually touched this day's entry
+  if (h.negative) {
+    if (h.type === 'yn')  return v === false;           // must explicitly mark "avoided"
+    if (h.type === 'num') return logged && v === 0;     // must set 0 explicitly
+    return false;
+  }
+  if (h.type === 'yn')   return v === true;
+  if (h.type === 'num')  return typeof v === 'number' && v > 0;
+  if (h.type === 'time') return typeof v === 'string' && v !== '';
+  return false;
+}
 
 function getDayScore(dateStr, filterCat) {
   const log = getLog(dateStr);
-  const relevant = habits.filter(h => filterCat === 'all' || h.cat === filterCat || (filterCat === 'negativo' && h.negative));
-  if (relevant.length === 0) return null;
-
-  let done = 0;
-  let total = relevant.length;
-
-  relevant.forEach(h => {
-    const v = log[h.id];
-    if (h.negative) {
-      if (h.type === 'yn') { if (v === false || v === 0) done++; }
-      else if (h.type === 'num') { if (v === 0 || v === undefined || v === null) done++; }
-    } else {
-      if (h.type === 'yn') { if (v === true || v === 1) done++; }
-      else if (h.type === 'num') { if (v && v > 0) done++; }
-      else if (h.type === 'time') { if (v) done++; }
-    }
+  const relevant = habits.filter(h => {
+    if (filterCat === 'all') return true;
+    if (filterCat === 'negativo') return h.negative;
+    return h.cat === filterCat;
   });
-
-  return Math.round((done / total) * 100);
+  if (!relevant.length) return null;
+  const done = relevant.filter(h => isHabitDone(h, log)).length;
+  return Math.round((done / relevant.length) * 100);
 }
 
 function pctColor(pct) {
@@ -745,10 +749,11 @@ function pctColor(pct) {
   return { bg:'#D9534A', text:'#5a1a1a' };
 }
 
-// ── TODAY PAGE ───────────────────────────────────────────────────────────────
+// ── TODAY PAGE ────────────────────────────────────────────────────────────────
+// Uses event delegation: listeners are set once, never re-added on re-render.
 
 function renderToday() {
-  const d = currentDate;
+  const d   = currentDate;
   const key = dateKey(d);
   const log = getLog(key);
 
@@ -756,19 +761,20 @@ function renderToday() {
   document.getElementById('dayFull').textContent = formatDate(d);
   document.getElementById('todayPill').style.display = isToday(d) ? 'inline-block' : 'none';
 
-  const pct = getDayScore(key, 'all') || 0;
+  // Ring
+  const pct    = getDayScore(key, 'all') ?? 0;
   const circum = 238.76;
   const offset = circum - (pct / 100) * circum;
-  const col = pctColor(pct);
+  const col    = pctColor(pct);
   const ringFill = document.getElementById('ringFill');
   ringFill.style.strokeDashoffset = offset;
   ringFill.style.stroke = col ? col.bg : '#EBE5D8';
   document.getElementById('ringPct').textContent = pct + '%';
 
-  // Habits by category
+  // Habits HTML
   const cats = [
-    { key:'rutina', label:'Rutina' },
-    { key:'trabajo', label:'Trabajo / Estudio' },
+    { key:'rutina',   label:'Rutina' },
+    { key:'trabajo',  label:'Trabajo / Estudio' },
     { key:'finanzas', label:'Finanzas' },
   ];
 
@@ -776,36 +782,30 @@ function renderToday() {
   cats.forEach(cat => {
     const catHabits = habits.filter(h => h.cat === cat.key);
     if (!catHabits.length) return;
-    const catDone = catHabits.filter(h => {
-      const v = log[h.id];
-      if (h.negative) return h.type === 'yn' ? (v === false || v === 0) : (!v || v === 0);
-      return h.type === 'yn' ? (v === true || v === 1) : (h.type === 'time' ? !!v : v > 0);
-    }).length;
+    const catDone = catHabits.filter(h => isHabitDone(h, log)).length;
     html += `<div class="section-label"><span>${cat.label}</span><span style="font-size:10px;font-weight:400;">${catDone}/${catHabits.length}</span></div>`;
-    catHabits.forEach(h => {
-      const v = log[h.id];
-      let isDone = false;
-      if (h.negative) isDone = h.type === 'yn' ? (v === false || v === 0) : (!v || v === 0);
-      else isDone = h.type === 'yn' ? (v === true || v === 1) : (h.type === 'time' ? !!v : v > 0);
 
-      const rowClass = `habit-row${h.negative?' negative':''}${isDone?' completed':''}`;
-      let rightHtml = '';
+    catHabits.forEach(h => {
+      const done     = isHabitDone(h, log);
+      const rowClass = `habit-row${h.negative ? ' negative' : ''}${done ? ' completed' : ''}`;
+      let rightHtml  = '';
 
       if (h.type === 'yn') {
-        const cls = `check-btn${isDone?' done':''}${h.negative?' neg':''}`;
-        rightHtml = `<div class="${cls}" data-id="${h.id}" data-key="${key}">
-          <svg viewBox="0 0 13 13"><polyline points="2,6.5 5,9.5 11,3.5"/></svg></div>`;
+        const cls = `check-btn${done ? ' done' : ''}${h.negative ? ' neg' : ''}`;
+        rightHtml = `<div class="${cls}" data-action="yn" data-id="${h.id}">
+          <svg viewBox="0 0 13 13"><polyline points="2,6.5 5,9.5 11,3.5"/></svg>
+        </div>`;
       } else if (h.type === 'num') {
-        const val = v || 0;
+        const val = log[h.id] ?? 0;
         rightHtml = `<div class="num-input-wrap">
-          <div class="num-stepper" data-id="${h.id}" data-key="${key}" data-delta="-1">−</div>
-          <div class="num-val" data-id="${h.id}" data-key="${key}" data-type="num">${val}</div>
-          <div class="num-unit">${h.unit||''}</div>
-          <div class="num-stepper" data-id="${h.id}" data-key="${key}" data-delta="1">+</div>
+          <div class="num-stepper" data-action="step" data-id="${h.id}" data-delta="-1">−</div>
+          <div class="num-val" data-action="numval" data-id="${h.id}">${val}</div>
+          <div class="num-unit">${h.unit || ''}</div>
+          <div class="num-stepper" data-action="step" data-id="${h.id}" data-delta="1">+</div>
         </div>`;
       } else if (h.type === 'time') {
-        const val = v || '';
-        rightHtml = `<input class="time-input" type="time" value="${val}" data-id="${h.id}" data-key="${key}">`;
+        const val = log[h.id] || '';
+        rightHtml = `<input class="time-input" type="time" value="${val}" data-action="time" data-id="${h.id}">`;
       }
 
       const negTag = h.negative ? `<span style="font-size:9px;color:var(--red);margin-left:4px;">evitar</span>` : '';
@@ -814,7 +814,7 @@ function renderToday() {
           <span class="habit-emoji">${h.emoji}</span>
           <div class="habit-info">
             <div class="habit-name">${h.name}${negTag}</div>
-            ${h.type==='num'?`<div class="habit-sub">${h.unit||'cantidad'}</div>`:''}
+            ${h.type === 'num' ? `<div class="habit-sub">${h.unit || 'cantidad'}</div>` : ''}
           </div>
         </div>
         <div class="habit-right">${rightHtml}</div>
@@ -824,187 +824,221 @@ function renderToday() {
 
   document.getElementById('habitList').innerHTML = html;
 
-  // mood
+  // Mood
   const mood = log['__mood'] || 0;
   document.querySelectorAll('.mood-star').forEach(s => {
     s.classList.toggle('active', parseInt(s.dataset.v) === mood);
   });
 
-  // journal
-  document.getElementById('journalInput').value = log['__journal'] || '';
-
-  attachTodayEvents(key);
+  // Journal (preserve cursor if same element)
+  const jEl = document.getElementById('journalInput');
+  const jVal = log['__journal'] || '';
+  if (jEl.value !== jVal) jEl.value = jVal;
 }
 
-function attachTodayEvents(key) {
-  // yn checks
-  document.querySelectorAll('.check-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.id;
-      const cur = getLog(key)[id];
-      const h = habits.find(x => x.id === id);
-      let newVal;
-      if (h.negative) newVal = (cur === false || cur === 0) ? true : false;
-      else newVal = (cur === true || cur === 1) ? false : true;
-      saveLog(key, id, newVal);
-      renderToday();
-    });
-  });
+// ── EVENT DELEGATION for habit list ─────────────────────────────────────────
 
-  // num steppers
-  document.querySelectorAll('.num-stepper').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.id;
-      const delta = parseInt(btn.dataset.delta);
-      const cur = parseInt(getLog(key)[id]) || 0;
-      const newVal = Math.max(0, cur + delta);
-      saveLog(key, id, newVal);
-      renderToday();
-    });
-  });
+document.getElementById('habitList').addEventListener('click', e => {
+  const key = dateKey(currentDate);
+
+  // yn toggle
+  const ynBtn = e.target.closest('[data-action="yn"]');
+  if (ynBtn) {
+    const id  = ynBtn.dataset.id;
+    const h   = habits.find(x => x.id === id);
+    const cur = getLog(key)[id];
+    let newVal;
+    if (h.negative) {
+      // negative yn: toggle between false (avoided = done) and true (failed)
+      // If untouched (undefined) or true → set false (avoided). If false → set true (failed).
+      newVal = cur === false ? true : false;
+    } else {
+      newVal = cur === true ? false : true;
+    }
+    saveLog(key, id, newVal);
+    renderToday();
+    return;
+  }
+
+  // num stepper
+  const stepper = e.target.closest('[data-action="step"]');
+  if (stepper) {
+    const id    = stepper.dataset.id;
+    const delta = parseInt(stepper.dataset.delta);
+    const cur   = Number(getLog(key)[id]) || 0;
+    const newVal = Math.max(0, cur + delta);
+    saveLog(key, id, newVal);
+    renderToday();
+    return;
+  }
 
   // num val tap → modal
-  document.querySelectorAll('.num-val').forEach(el => {
-    el.addEventListener('click', () => {
-      const id = el.dataset.id;
-      const h = habits.find(x => x.id === id);
-      openNumModal(id, key, h);
-    });
-  });
+  const numVal = e.target.closest('[data-action="numval"]');
+  if (numVal) {
+    const id = numVal.dataset.id;
+    const h  = habits.find(x => x.id === id);
+    openNumModal(id, key, h);
+  }
+});
 
-  // time inputs
-  document.querySelectorAll('.time-input').forEach(inp => {
-    inp.addEventListener('change', () => {
-      saveLog(inp.dataset.key, inp.dataset.id, inp.value);
-      renderToday();
-    });
-  });
-
-  // mood
-  document.querySelectorAll('.mood-star').forEach(s => {
-    s.addEventListener('click', () => {
-      const v = parseInt(s.dataset.v);
-      const cur = getLog(key)['__mood'];
-      saveLog(key, '__mood', cur === v ? 0 : v);
-      renderToday();
-    });
-  });
-
-  // journal
-  const j = document.getElementById('journalInput');
-  j.oninput = () => saveLog(key, '__journal', j.value);
-}
-
-// num modal
-let modalHabitId = null, modalKey = null;
-function openNumModal(id, key, h) {
-  modalHabitId = id; modalKey = key;
-  document.getElementById('numModalTitle').textContent = `${h.emoji} ${h.name} (${h.unit||'valor'})`;
-  document.getElementById('numModalInput').value = getLog(key)[id] || '';
-  document.getElementById('numModal').classList.add('open');
-  setTimeout(() => document.getElementById('numModalInput').focus(), 100);
-}
-document.getElementById('numModalSave').addEventListener('click', () => {
-  const val = parseFloat(document.getElementById('numModalInput').value) || 0;
-  saveLog(modalKey, modalHabitId, val);
-  document.getElementById('numModal').classList.remove('open');
+// time inputs — use change event via delegation on the list
+document.getElementById('habitList').addEventListener('change', e => {
+  const inp = e.target.closest('[data-action="time"]');
+  if (!inp) return;
+  const key = dateKey(currentDate);
+  saveLog(key, inp.dataset.id, inp.value);
   renderToday();
 });
-document.getElementById('numModal').addEventListener('click', e => {
-  if (e.target === document.getElementById('numModal')) document.getElementById('numModal').classList.remove('open');
+
+// mood stars
+document.getElementById('moodStars').addEventListener('click', e => {
+  const star = e.target.closest('.mood-star');
+  if (!star) return;
+  const key = dateKey(currentDate);
+  const v   = parseInt(star.dataset.v);
+  const cur = getLog(key)['__mood'];
+  saveLog(key, '__mood', cur === v ? 0 : v);
+  renderToday();
+});
+
+// journal — debounce saves
+let journalTimer = null;
+document.getElementById('journalInput').addEventListener('input', e => {
+  clearTimeout(journalTimer);
+  journalTimer = setTimeout(() => {
+    saveLog(dateKey(currentDate), '__journal', e.target.value);
+  }, 400);
 });
 
 // date nav
 document.getElementById('prevDay').addEventListener('click', () => {
-  currentDate = addDays(currentDate, -1); renderToday();
+  currentDate = addDays(currentDate, -1);
+  renderToday();
 });
 document.getElementById('nextDay').addEventListener('click', () => {
-  currentDate = addDays(currentDate, 1); renderToday();
+  currentDate = addDays(currentDate, 1);
+  renderToday();
 });
 
-// ── WEEK PAGE ────────────────────────────────────────────────────────────────
+// ── NUM MODAL ─────────────────────────────────────────────────────────────────
+
+let modalHabitId = null, modalKey = null;
+
+function openNumModal(id, key, h) {
+  modalHabitId = id;
+  modalKey     = key;
+  document.getElementById('numModalTitle').textContent = `${h.emoji} ${h.name} (${h.unit || 'valor'})`;
+  const inp = document.getElementById('numModalInput');
+  inp.value = getLog(key)[id] ?? '';
+  document.getElementById('numModal').classList.add('open');
+  setTimeout(() => inp.focus(), 100);
+}
+
+document.getElementById('numModalSave').addEventListener('click', () => {
+  const val = parseFloat(document.getElementById('numModalInput').value);
+  saveLog(modalKey, modalHabitId, isNaN(val) ? 0 : val);
+  document.getElementById('numModal').classList.remove('open');
+  renderToday();
+});
+
+document.getElementById('numModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('numModal')) {
+    document.getElementById('numModal').classList.remove('open');
+  }
+});
+
+// ── WEEK PAGE ─────────────────────────────────────────────────────────────────
 
 function getWeekStart(offset) {
-  const t = today();
+  const t   = today();
   const dow = t.getDay();
-  const mon = addDays(t, -(dow === 0 ? 6 : dow - 1) + offset * 7);
-  return mon;
+  return addDays(t, -(dow === 0 ? 6 : dow - 1) + offset * 7);
 }
 
 function renderWeek() {
   try {
-  const weekStart = getWeekStart(weekOffset);
-  const weekEnd = addDays(weekStart, 6);
-  document.getElementById('weekTitle').textContent =
-    `${weekStart.getDate()} – ${weekEnd.getDate()} ${MONTHS[weekEnd.getMonth()]}`;
-  document.getElementById('weekSubtitle').textContent = `${weekStart.getFullYear()}`;
+    const weekStart = getWeekStart(weekOffset);
+    const weekEnd   = addDays(weekStart, 6);
+    document.getElementById('weekTitle').textContent =
+      `${weekStart.getDate()} – ${weekEnd.getDate()} ${MONTHS[weekEnd.getMonth()]}`;
+    document.getElementById('weekSubtitle').textContent = `${weekStart.getFullYear()}`;
 
-  const grid = document.getElementById('weekGrid');
-  grid.innerHTML = '';
-  const todayKey = dateKey(today());
+    const grid     = document.getElementById('weekGrid');
+    grid.innerHTML = '';
+    const todayKey = dateKey(today());
 
-  for (let i = 0; i < 7; i++) {
-    const d = addDays(weekStart, i);
-    const key = dateKey(d);
-    const isFuture = d > today();
-    const pct = isFuture ? null : getDayScore(key, activeFilter);
-    const col = pctColor(pct);
-    const isT = key === todayKey;
+    for (let i = 0; i < 7; i++) {
+      const d       = addDays(weekStart, i);
+      const key     = dateKey(d);
+      const isFuture = d > today();
+      const pct     = isFuture ? null : getDayScore(key, activeFilter);
+      const col     = pctColor(pct);
+      const isT     = key === todayKey;
 
-    const col_div = document.createElement('div');
-    col_div.className = 'week-col';
+      const colDiv  = document.createElement('div');
+      colDiv.className = 'week-col';
 
-    const lbl = document.createElement('div');
-    lbl.className = 'week-day-label';
-    lbl.textContent = DAYS_SHORT[d.getDay()];
+      const lbl = document.createElement('div');
+      lbl.className   = 'week-day-label';
+      lbl.textContent = DAYS_SHORT[d.getDay()];
 
-    const box = document.createElement('div');
-    box.className = `week-box${isT?' today-box':''}${!col?' no-data':''}`;
-    if (col) {
-      box.style.background = col.bg;
-      box.style.color = col.text;
-      box.innerHTML = `${pct}<span>%</span>`;
-    } else {
-      box.innerHTML = isFuture ? '' : '—';
+      const box = document.createElement('div');
+      box.className = `week-box${isT ? ' today-box' : ''}${!col ? ' no-data' : ''}`;
+      if (col) {
+        box.style.background = col.bg;
+        box.style.color      = col.text;
+        box.innerHTML = `${pct}<span>%</span>`;
+      } else {
+        box.innerHTML = isFuture ? '' : '—';
+      }
+      box.dataset.key = key;
+      box.addEventListener('click', () => {
+        selectedWeekDay = key;
+        renderWeekDetail(key);
+      });
+
+      colDiv.appendChild(lbl);
+      colDiv.appendChild(box);
+      grid.appendChild(colDiv);
     }
-    box.dataset.key = key;
-    box.dataset.date = key;
-    box.addEventListener('click', () => {
-      selectedWeekDay = key;
-      renderWeekDetail(key);
-    });
 
-    col_div.appendChild(lbl);
-    col_div.appendChild(box);
-    grid.appendChild(col_div);
-  }
-
-  if (selectedWeekDay) renderWeekDetail(selectedWeekDay);
-  else document.getElementById('weekDetail').innerHTML = '';
-  } catch(e) { console.error('Week render error:', e); }
+    if (selectedWeekDay) renderWeekDetail(selectedWeekDay);
+    else document.getElementById('weekDetail').innerHTML = '';
+  } catch (e) { console.error('Week render error:', e); }
 }
 
 function renderWeekDetail(key) {
   const log = getLog(key);
-  const d = new Date(key + 'T00:00:00');
-  const relevant = habits.filter(h => activeFilter === 'all' || h.cat === activeFilter || (activeFilter === 'negativo' && h.negative));
+  const d   = new Date(key + 'T00:00:00');
+  const relevant = habits.filter(h => {
+    if (activeFilter === 'all') return true;
+    if (activeFilter === 'negativo') return h.negative;
+    return h.cat === activeFilter;
+  });
+
   let html = `<div class="week-detail"><div class="week-detail-title">${DAYS[d.getDay()]} ${d.getDate()} de ${MONTHS[d.getMonth()]}</div>`;
 
-  if (!relevant.length) { html += '<div style="font-size:12px;color:var(--text3);">Sin hábitos en esta categoría.</div>'; }
-  else {
+  if (!relevant.length) {
+    html += '<div style="font-size:12px;color:var(--text3);">Sin hábitos en esta categoría.</div>';
+  } else {
     relevant.forEach(h => {
       const v = log[h.id];
       let displayVal = '—';
-      if (h.type === 'yn') displayVal = v === true || v === 1 ? '✓' : v === false || v === 0 ? '✗' : '—';
-      else if (h.type === 'num') displayVal = v !== undefined && v !== null ? `${v} ${h.unit||''}` : '—';
-      else if (h.type === 'time') displayVal = v || '—';
+      if (h.type === 'yn') {
+        displayVal = v === true ? '✓' : v === false ? '✗' : '—';
+      } else if (h.type === 'num') {
+        displayVal = (v !== undefined && v !== null) ? `${v} ${h.unit || ''}` : '—';
+      } else if (h.type === 'time') {
+        displayVal = v || '—';
+      }
       html += `<div class="week-detail-row">
         <div class="wdr-left"><span>${h.emoji}</span>${h.name}</div>
         <div class="wdr-val">${displayVal}</div>
       </div>`;
     });
-    const mood = log['__mood'];
+
     const moodEmojis = ['','😴','😐','🙂','😊','🔥'];
+    const mood = log['__mood'];
     if (mood) html += `<div class="week-detail-row"><div class="wdr-left">💭 Mood</div><div class="wdr-val">${moodEmojis[mood]}</div></div>`;
     const journal = log['__journal'];
     if (journal) html += `<div style="margin-top:8px;font-size:11px;color:var(--text2);font-style:italic;">"${journal}"</div>`;
@@ -1026,19 +1060,18 @@ document.getElementById('filterRow').addEventListener('click', e => {
   renderWeek();
 });
 
-// ── STATS PAGE ───────────────────────────────────────────────────────────────
+// ── STATS PAGE ────────────────────────────────────────────────────────────────
 
 function getDateRange(period) {
   const t = today();
   if (period === 'week') {
-    const dow = t.getDay();
+    const dow   = t.getDay();
     const start = addDays(t, -(dow === 0 ? 6 : dow - 1));
     return { start, end: t };
   }
   if (period === 'month') {
     return { start: new Date(t.getFullYear(), t.getMonth(), 1), end: t };
   }
-  // all: find earliest log
   const keys = Object.keys(logs).sort();
   if (!keys.length) return { start: t, end: t };
   return { start: new Date(keys[0] + 'T00:00:00'), end: t };
@@ -1067,77 +1100,70 @@ function getCurrentStreak() {
 function getBestStreak() {
   const keys = Object.keys(logs).sort();
   let best = 0, cur = 0;
-  keys.forEach((k, i) => {
+  keys.forEach(k => {
     const pct = getDayScore(k, 'all');
-    if (pct > 0) { cur++; if (cur > best) best = cur; }
+    if (pct !== null && pct > 0) { cur++; if (cur > best) best = cur; }
     else cur = 0;
   });
   return best;
 }
 
-function getPerfectDays(days) {
-  return days.filter(k => getDayScore(k, 'all') === 100).length;
-}
-
-function getTrend(days, prev7) {
-  if (!days.length || !prev7.length) return 0;
-  const avg = arr => arr.reduce((a,b) => a + (getDayScore(b,'all')||0), 0) / arr.length;
-  return Math.round(avg(days) - avg(prev7));
-}
-
 function renderStats() {
   const { start, end } = getDateRange(statsPeriod);
-  const days = getDaysInRange(start, end).filter(k => logs[k]);
-  const streak = getCurrentStreak();
-  const best = getBestStreak();
-  const perfect = getPerfectDays(days);
-  const avgPct = days.length ? Math.round(days.reduce((a,k) => a + (getDayScore(k,'all')||0), 0) / days.length) : 0;
+  const days    = getDaysInRange(start, end).filter(k => logs[k]);
+  const streak  = getCurrentStreak();
+  const best    = getBestStreak();
+  const perfect = days.filter(k => getDayScore(k, 'all') === 100).length;
+  const avgPct  = days.length
+    ? Math.round(days.reduce((a, k) => a + (getDayScore(k, 'all') || 0), 0) / days.length)
+    : 0;
 
-  // trend vs prev period
+  // trend vs previous period
   const periodLen = getDaysInRange(start, end).length;
   const prevStart = addDays(start, -periodLen);
-  const prevEnd = addDays(start, -1);
-  const prevDays = getDaysInRange(prevStart, prevEnd).filter(k => logs[k]);
-  const trend = getTrend(days, prevDays);
+  const prevEnd   = addDays(start, -1);
+  const prevDays  = getDaysInRange(prevStart, prevEnd).filter(k => logs[k]);
+  const avgPrev   = prevDays.length
+    ? Math.round(prevDays.reduce((a, k) => a + (getDayScore(k, 'all') || 0), 0) / prevDays.length)
+    : null;
+  const trend     = avgPrev !== null ? (avgPct - avgPrev) : 0;
+  const trendHtml = trend > 0
+    ? `<div class="stat-trend trend-up">↑ +${trend}% vs anterior</div>`
+    : trend < 0
+    ? `<div class="stat-trend trend-down">↓ ${trend}% vs anterior</div>`
+    : `<div class="stat-trend trend-flat">→ igual que antes</div>`;
 
-  // per habit stats
+  // per-habit stats
   const habitStats = habits.map(h => {
-    const relevant = days.filter(k => {
-      const v = getLog(k)[h.id];
-      if (h.negative) return h.type === 'yn' ? (v === false || v === 0) : (!v || v === 0);
-      return h.type === 'yn' ? (v === true || v === 1) : (h.type === 'time' ? !!v : v > 0);
-    });
-    const pct = days.length ? Math.round((relevant.length / days.length) * 100) : 0;
-
-    let avg = null;
+    const done = days.filter(k => isHabitDone(h, getLog(k))).length;
+    const pct  = days.length ? Math.round((done / days.length) * 100) : 0;
+    let avg    = null;
     if (h.type === 'num' && days.length) {
-      const vals = days.map(k => getLog(k)[h.id]).filter(v => v > 0);
-      if (vals.length) avg = Math.round(vals.reduce((a,b) => a+b, 0) / vals.length);
+      const vals = days.map(k => getLog(k)[h.id]).filter(v => typeof v === 'number' && v > 0);
+      if (vals.length) avg = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
     }
     return { ...h, pct, avg };
-  }).sort((a,b) => b.pct - a.pct);
+  }).sort((a, b) => b.pct - a.pct);
 
   // avg mood
-  const moods = days.map(k => getLog(k)['__mood']).filter(v => v > 0);
-  const avgMood = moods.length ? (moods.reduce((a,b)=>a+b,0)/moods.length).toFixed(1) : '—';
-
-  const trendHtml = trend > 0 ? `<div class="stat-trend trend-up">↑ +${trend}% vs anterior</div>` :
-                    trend < 0 ? `<div class="stat-trend trend-down">↓ ${trend}% vs anterior</div>` :
-                    `<div class="stat-trend trend-flat">→ igual que antes</div>`;
+  const moods   = days.map(k => getLog(k)['__mood']).filter(v => v > 0);
+  const avgMood = moods.length
+    ? (moods.reduce((a, b) => a + b, 0) / moods.length).toFixed(1)
+    : '—';
 
   // insights
   const insights = [];
   if (streak >= 3) insights.push(`🔥 Llevas ${streak} días seguidos — no rompas la cadena.`);
-  if (perfect > 0) insights.push(`⭐ Has tenido ${perfect} día${perfect>1?'s':''} perfecto${perfect>1?'s':''} en este período.`);
-  const worstHabit = habitStats.filter(h=>!h.negative).sort((a,b)=>a.pct-b.pct)[0];
-  if (worstHabit && worstHabit.pct < 50) insights.push(`⚠️ "${worstHabit.name}" es tu punto más débil (${worstHabit.pct}%).`);
-  const bestHabit = habitStats.filter(h=>!h.negative)[0];
-  if (bestHabit && bestHabit.pct >= 80) insights.push(`💪 "${bestHabit.name}" es tu hábito más consistente (${bestHabit.pct}%).`);
+  if (perfect > 0) insights.push(`⭐ Has tenido ${perfect} día${perfect > 1 ? 's' : ''} perfecto${perfect > 1 ? 's' : ''} en este período.`);
+  const worstPositive = habitStats.filter(h => !h.negative).sort((a, b) => a.pct - b.pct)[0];
+  if (worstPositive && worstPositive.pct < 50) insights.push(`⚠️ "${worstPositive.name}" es tu punto más débil (${worstPositive.pct}%).`);
+  const bestPositive  = habitStats.filter(h => !h.negative)[0];
+  if (bestPositive && bestPositive.pct >= 80) insights.push(`💪 "${bestPositive.name}" es tu hábito más consistente (${bestPositive.pct}%).`);
   if (avgMood !== '—' && parseFloat(avgMood) >= 4) insights.push(`😊 Tu energía media es alta (${avgMood}/5). ¡Buen momento para subir la exigencia!`);
 
   let html = '';
 
-  // streak
+  // streak card
   html += `<div class="streak-card">
     <div class="streak-emoji">🔥</div>
     <div>
@@ -1171,9 +1197,10 @@ function renderStats() {
   // bars
   html += `<div class="section-label">Por hábito</div><div class="bar-section">`;
   habitStats.forEach(h => {
-    const col = pctColor(h.pct);
+    const col       = pctColor(h.pct);
     const fillColor = col ? col.bg : '#EBE5D8';
-    const sub = h.type === 'num' && h.avg ? `<span style="font-size:9px;color:var(--text3);"> · ${h.avg} ${h.unit}/día</span>` : '';
+    const sub       = h.type === 'num' && h.avg != null
+      ? `<span style="font-size:9px;color:var(--text3);"> · ${h.avg} ${h.unit}/día</span>` : '';
     html += `<div class="bar-row">
       <div class="bar-emoji">${h.emoji}</div>
       <div class="bar-name">${h.name}${sub}</div>
@@ -1203,7 +1230,7 @@ document.querySelectorAll('.period-btn').forEach(btn => {
   });
 });
 
-// ── EDIT PAGE ────────────────────────────────────────────────────────────────
+// ── EDIT PAGE ─────────────────────────────────────────────────────────────────
 
 function renderEdit() {
   const list = document.getElementById('editList');
@@ -1214,7 +1241,7 @@ function renderEdit() {
     if (!ch.length) return;
     html += `<div class="section-label">${cats[cat]}</div>`;
     ch.forEach(h => {
-      const typeLbl = h.type === 'yn' ? 'sí / no' : h.type === 'num' ? `número · ${h.unit||''}` : 'hora';
+      const typeLbl = h.type === 'yn' ? 'sí / no' : h.type === 'num' ? `número · ${h.unit || ''}` : 'hora';
       const typeCls = h.type === 'yn' ? 'badge-yn' : h.type === 'num' ? 'badge-num' : 'badge-time';
       html += `<div class="edit-row">
         <div class="edit-left">
@@ -1241,6 +1268,7 @@ function renderEdit() {
         habits = habits.filter(h => h.id !== btn.dataset.id);
         save('af_habits', habits);
         renderEdit();
+        renderToday();
       }
     });
   });
@@ -1257,18 +1285,18 @@ document.querySelectorAll('.type-btn').forEach(btn => {
 });
 
 document.getElementById('addHabitBtn').addEventListener('click', () => {
-  const name = document.getElementById('newName').value.trim();
-  const emoji = document.getElementById('newEmoji').value.trim() || '⭐';
-  const cat = document.getElementById('newCat').value;
-  const unit = document.getElementById('newUnit').value.trim();
+  const name     = document.getElementById('newName').value.trim();
+  const emoji    = document.getElementById('newEmoji').value.trim() || '⭐';
+  const cat      = document.getElementById('newCat').value;
+  const unit     = document.getElementById('newUnit').value.trim();
   const negative = document.getElementById('newNegative').checked;
   if (!name) { alert('Escribe un nombre para el hábito'); return; }
   const id = 'h' + Date.now();
   habits.push({ id, emoji, name, cat, type: editType, unit: editType === 'num' ? unit : undefined, negative });
   save('af_habits', habits);
-  document.getElementById('newName').value = '';
-  document.getElementById('newEmoji').value = '';
-  document.getElementById('newUnit').value = '';
+  document.getElementById('newName').value    = '';
+  document.getElementById('newEmoji').value   = '';
+  document.getElementById('newUnit').value    = '';
   document.getElementById('newNegative').checked = false;
   renderEdit();
   renderToday();
@@ -1280,40 +1308,41 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   if (!keys.length) { alert('No hay datos para exportar.'); return; }
   const headers = ['Fecha', 'Mood', 'Nota', ...habits.map(h => `${h.emoji} ${h.name}`), 'Porcentaje'];
   const rows = keys.map(k => {
-    const log = logs[k];
-    const cells = [k, log['__mood']||'', (log['__journal']||'').replace(/,/g,''), ...habits.map(h => log[h.id] !== undefined ? log[h.id] : ''), getDayScore(k,'all')||0];
+    const log   = logs[k];
+    const cells = [
+      k,
+      log['__mood'] || '',
+      (log['__journal'] || '').replace(/,/g, ''),
+      ...habits.map(h => log[h.id] !== undefined ? log[h.id] : ''),
+      getDayScore(k, 'all') ?? 0
+    ];
     return cells.join(',');
   });
-  const csv = [headers.join(','), ...rows].join('\n');
+  const csv  = [headers.join(','), ...rows].join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
   a.href = url; a.download = 'antifragil_datos.csv'; a.click();
   URL.revokeObjectURL(url);
 });
 
-// ── NAV ──────────────────────────────────────────────────────────────────────
+// ── NAV ───────────────────────────────────────────────────────────────────────
 
 function navigateTo(page) {
-  try {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    const activeBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
-    if (activeBtn) activeBtn.classList.add('active');
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const pageEl = document.getElementById('page-' + page);
-    if (pageEl) {
-      pageEl.classList.add('active');
-      pageEl.scrollTop = 0;
-    }
-    if (page === 'week') renderWeek();
-    else if (page === 'stats') renderStats();
-    else if (page === 'edit') renderEdit();
-    else if (page === 'today') renderToday();
-  } catch(e) { console.error('Nav error:', e); }
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) { pageEl.classList.add('active'); pageEl.scrollTop = 0; }
+  if (page === 'week')  renderWeek();
+  else if (page === 'stats') renderStats();
+  else if (page === 'edit')  renderEdit();
+  else if (page === 'today') renderToday();
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
+  btn.addEventListener('click', e => {
     e.preventDefault();
     navigateTo(btn.dataset.page);
   });
@@ -1325,18 +1354,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
-try {
-  renderToday();
-} catch (e) {
-  console.error('Initial render error:', e);
-  localStorage.removeItem('af_habits');
-  localStorage.removeItem('af_logs');
-  habits = [...DEFAULT_HABITS];
-  logs = {};
-  save('af_habits', habits);
-  save('af_logs', logs);
-  renderToday();
-}
+renderToday();
 </script>
 </body>
 </html>
