@@ -2,17 +2,10 @@
   "name": "Antifrágil",
   "short_name": "Antifrágil",
   "description": "Tu tracker de hábitos diarios",
-  "start_url": "./index.html",
+  "start_url": "./index.html?v=dev3",
   "display": "standalone",
-  "background_color": "#C4855A",
+  "background_color": "#F7F3EC",
   "theme_color": "#2A2318",
   "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
 }

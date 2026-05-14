@@ -92,7 +92,7 @@ body {
 
 /* BOTTOM NAV */
 .bottomnav {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; height: 56px;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 10000; height: 56px;
   background: var(--surface);
   border-top: 0.5px solid var(--border);
   display: flex;
@@ -109,8 +109,8 @@ body {
 .nav-btn svg { width: 22px; height: 22px; stroke-width: 1.6; fill: none; stroke: currentColor; }
 
 /* PAGES */
-.page { display: none; position: fixed; top: 52px; left: 0; right: 0; bottom: 56px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 18px 18px 20px; }
-.page.active { display: block; }
+.page { display: none; position: fixed; top: 52px; left: 0; right: 0; bottom: 56px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 18px 18px 20px; z-index:1; }
+.page.active { display: block; z-index:2; }
 
 /* DATE NAV */
 .date-nav {
@@ -1328,38 +1328,57 @@ document.getElementById('exportBtn').addEventListener('click', () => {
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 
+function showPageError(page, err) {
+  const pageEl = document.getElementById('page-' + page);
+  if (!pageEl) return;
+  pageEl.classList.add('active');
+  const target = page === 'stats' ? document.getElementById('statsContent') : null;
+  const msg = `<div class="insight-card"><div class="insight-text">Error cargando ${page}: ${err && err.message ? err.message : err}</div></div>`;
+  if (target) target.innerHTML = msg;
+  else pageEl.insertAdjacentHTML('afterbegin', msg);
+}
+
 function navigateTo(page) {
   try {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    const activeBtn = document.querySelector('.nav-btn[data-page="' + page + '"]');
+    const activeBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
     if (activeBtn) activeBtn.classList.add('active');
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const pageEl = document.getElementById('page-' + page);
-    if (pageEl) { pageEl.classList.add('active'); pageEl.scrollTop = 0; }
-    if (page === 'week')       renderWeek();
+    if (!pageEl) return;
+
+    pageEl.classList.add('active');
+    pageEl.scrollTop = 0;
+
+    if (page === 'week') renderWeek();
     else if (page === 'stats') renderStats();
-    else if (page === 'edit')  renderEdit();
+    else if (page === 'edit') renderEdit();
     else if (page === 'today') renderToday();
-  } catch(e) { console.error('Nav error:', e); }
+  } catch (err) {
+    console.error('Navigation error:', err);
+    showPageError(page, err);
+  }
 }
 
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  // touchend fires before click on iOS — prevents 300ms delay and capture issues
-  btn.addEventListener('touchend', e => {
-    e.preventDefault();
-    navigateTo(btn.dataset.page);
-  });
-  // fallback for desktop / non-touch
-  btn.addEventListener('click', e => {
-    e.preventDefault();
-    navigateTo(btn.dataset.page);
-  });
-});
+// Robust delegated navigation: works even after re-renders and on Android PWA.
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.nav-btn');
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  navigateTo(btn.dataset.page);
+}, true);
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 
+// TEMPORAL: desactivar service worker para evitar caché vieja durante el desarrollo.
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.getRegistrations()
+    .then(regs => Promise.all(regs.map(r => r.unregister())))
+    .then(() => caches && caches.keys ? caches.keys() : [])
+    .then(keys => Promise.all((keys || []).map(k => caches.delete(k))))
+    .catch(() => {});
 }
 
 renderToday();
