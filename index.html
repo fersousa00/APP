@@ -3,735 +3,467 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#F5F1EA">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Antifrágil">
+<meta name="theme-color" content="#F5F1EA">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Antifrágil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:       #F5F1EA;
-  --bg2:      #EDE8DF;
-  --bg3:      #E8E2D8;
-  --bg4:      #E2DBD0;
-  --card:     #EDE8DF;
-  --border:   #E2DDD4;
-  --border2:  #D8D0C8;
-  --text:     #1C1814;
-  --text2:    #5A4A38;
-  --text3:    #8A7A68;
-  --text4:    #B0A898;
-  --text5:    #C8C0B8;
-  --gold:     #8A7A60;
-  --gold2:    #A8906A;
-  --gold3:    #C0A878;
-  --green:    #7BAF8A;
-  --green-bg: #E8F0E8;
-  --red-bg:   #F0E8E8;
-  --nav-h:    64px;
-  --serif:    'DM Serif Display', serif;
-  --sans:     'Outfit', sans-serif;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-html, body {
-  width: 100%; height: 100%; overflow: hidden;
-  background: var(--bg);
-  font-family: var(--sans);
-  color: var(--text);
-  -webkit-font-smoothing: antialiased;
-}
-
-#app {
-  width: 100%; height: 100%;
-  max-width: 430px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* ── PAGES ── */
-#pages { flex: 1; overflow: hidden; position: relative; }
-.page {
-  position: absolute; inset: 0;
-  overflow-y: auto; overflow-x: hidden;
-  padding-bottom: calc(var(--nav-h) + 16px);
-  display: none;
-  -webkit-overflow-scrolling: touch;
-}
-.page::-webkit-scrollbar { display: none; }
-.page.active { display: block; animation: fadeUp 0.22s ease; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
-/* ── NAV ── */
-#nav {
-  height: var(--nav-h);
-  background: var(--bg2);
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 6px;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 100;
-}
-.nav-btn {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 4px; padding: 6px 0;
-  background: none; border: none; cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.nav-btn svg { width: 20px; height: 20px; }
-.nav-btn svg path, .nav-btn svg line, .nav-btn svg polyline, .nav-btn svg rect, .nav-btn svg circle {
-  stroke: var(--text5); transition: stroke 0.2s;
-}
-.nav-btn .nav-lbl {
-  font-size: 9px; font-weight: 600;
-  letter-spacing: 0.07em; text-transform: uppercase;
-  color: var(--text5); transition: color 0.2s;
-}
-.nav-btn.active .nav-lbl { color: var(--text2); }
-.nav-btn.active svg path,
-.nav-btn.active svg line,
-.nav-btn.active svg polyline,
-.nav-btn.active svg rect,
-.nav-btn.active svg circle { stroke: var(--gold); }
-.nav-btn .nav-dot {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: var(--gold); margin-bottom: -2px;
-  display: none;
-}
-.nav-btn.active .nav-dot { display: block; }
-.nav-btn-edit {
-  font-family: var(--serif); font-style: italic;
-  font-size: 14px; color: var(--gold);
-  background: none; border: none; cursor: pointer;
-  flex: 1; text-align: center; padding: 6px 0;
-}
-
-/* ── SHARED COMPONENTS ── */
-.page-top {
-  padding: 24px 22px 16px;
-  border-bottom: 1px solid var(--border);
-}
-.page-title {
-  font-family: var(--serif); font-size: 26px; font-style: italic;
-  color: var(--text); line-height: 1;
-}
-.page-subtitle {
-  font-size: 11px; font-weight: 500;
-  color: var(--text4); margin-top: 5px;
-}
-
-.section-label {
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--text5); margin-bottom: 8px;
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  margin: 12px 18px;
-}
-
-.divider { height: 1px; background: var(--border); margin: 0 18px; }
-
-/* ── HOY PAGE ── */
-.hoy-header {
-  padding: 24px 22px 16px;
-  display: flex; justify-content: space-between; align-items: flex-start;
-  border-bottom: 1px solid var(--border);
-}
-.hoy-brand {
-  font-family: var(--serif); font-size: 30px; font-style: italic;
-  color: var(--text); line-height: 1; letter-spacing: -0.01em;
-}
-.hoy-date {
-  font-size: 11px; font-weight: 500; color: var(--text4); margin-top: 5px;
-}
-.hoy-score { text-align: right; }
-.hoy-score-ring { position: relative; display: inline-block; }
-.hoy-score-ring svg { display: block; }
-.hoy-score-center {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-}
-.hoy-score-n {
-  font-family: var(--serif); font-style: italic;
-  font-size: 15px; color: var(--gold); line-height: 1;
-}
-.hoy-score-l {
-  font-size: 7px; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--text5); margin-top: 2px;
-}
-
-/* Habits card */
-.habits-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  margin: 14px 18px;
-  overflow: hidden;
-}
-.habits-card-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 13px 16px 11px;
-  border-bottom: 1px solid var(--border);
-}
-.habits-card-title {
-  font-size: 12px; font-weight: 700;
-  letter-spacing: 0.03em; color: var(--text3);
-}
-.habits-card-edit {
-  font-size: 12px; font-weight: 600; color: var(--gold2);
-  background: none; border: none; cursor: pointer;
-}
-
-.habit-row {
-  display: flex; align-items: center;
-  padding: 12px 16px; gap: 12px;
-  border-bottom: 1px solid var(--bg3);
-  transition: background 0.15s;
-}
-.habit-row:last-child { border-bottom: none; }
-.habit-row:active { background: var(--bg3); }
-.habit-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
-.habit-name {
-  font-size: 14px; font-weight: 600; color: var(--text); flex: 1;
-}
-.habit-name.done { color: var(--text3); }
-
-/* iOS Toggle */
-.toggle {
-  width: 44px; height: 27px; border-radius: 14px;
-  flex-shrink: 0; position: relative;
-  transition: background 0.25s ease;
-  cursor: pointer;
-}
-.toggle.on  { background: var(--green); }
-.toggle.off { background: var(--bg4); }
-.toggle-ball {
-  position: absolute; top: 3.5px;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: var(--bg); transition: left 0.25s ease;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-}
-.toggle.on  .toggle-ball { left: 20px; }
-.toggle.off .toggle-ball { left: 3.5px; }
-
-/* Day summary */
-.day-summary {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 14px; margin: 0 18px 14px;
-  padding: 14px 16px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.day-sum-left { display: flex; align-items: center; gap: 11px; }
-.day-sum-emoji { font-size: 22px; }
-.day-sum-title {
-  font-family: var(--serif); font-style: italic;
-  font-size: 17px; color: var(--text); line-height: 1;
-}
-.day-sum-sub {
-  font-size: 10px; font-weight: 500; color: var(--text4); margin-top: 3px;
-}
-
-/* Date nav */
-.date-nav {
-  display: flex; align-items: center; justify-content: center;
-  gap: 18px; padding: 10px 0 4px;
-}
-.date-nav-btn {
-  background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: 8px; width: 30px; height: 30px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--text3); font-size: 17px;
-  transition: background 0.15s;
-}
-.date-nav-btn:active { background: var(--bg4); }
-.date-nav-label {
-  font-size: 12px; font-weight: 600; color: var(--text3);
-  min-width: 100px; text-align: center;
-}
-
-/* ── SEMANA PAGE ── */
-.streak-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 16px; margin: 14px 18px;
-  padding: 16px 18px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.streak-left {}
-.streak-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text5); margin-bottom: 5px; }
-.streak-n { font-family: var(--serif); font-style: italic; font-size: 44px; color: var(--text); line-height: 1; }
-.streak-sub { font-size: 11px; font-weight: 500; color: var(--text4); margin-top: 4px; }
-.streak-icon { font-size: 38px; }
-
-/* Week circles */
-.week-circles {
-  display: flex; gap: 6px;
-  padding: 0 18px; margin-bottom: 4px;
-}
-.wc-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.wc-name { font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text5); }
-.wc-circle {
-  width: 36px; height: 36px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700;
-}
-.wc-circle.full    { background: #A8C8A0; color: #2A4A28; }
-.wc-circle.partial { background: #D8C8A8; color: #5A4A28; }
-.wc-circle.empty   { background: var(--bg3); color: var(--text5); }
-.wc-circle.today   { box-shadow: 0 0 0 2px var(--gold); }
-
-/* Habit stats */
-.habit-stat-row {
-  display: flex; align-items: center;
-  padding: 11px 16px; gap: 12px;
-  border-bottom: 1px solid var(--bg3);
-}
-.habit-stat-row:last-child { border-bottom: none; }
-.hs-name { font-size: 13px; font-weight: 600; color: var(--text2); flex-shrink: 0; width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hs-bar-wrap { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; }
-.hs-bar { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
-.hs-pct { font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--gold); width: 36px; text-align: right; flex-shrink: 0; }
-
-/* Insight */
-.insight {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px 14px;
-  margin-bottom: 8px;
-  display: flex; gap: 10px; align-items: flex-start;
-}
-.insight-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-.insight-txt { font-size: 12px; font-weight: 500; color: var(--text3); line-height: 1.5; }
-.insight-txt strong { color: var(--text2); font-weight: 700; }
-
-/* ── BIBLIOTECA PAGE ── */
-.bib-search {
-  margin: 12px 18px 0;
-  background: var(--bg3); border-radius: 12px;
-  padding: 10px 14px; display: flex; align-items: center; gap: 9px;
-  font-size: 13px; font-weight: 500; color: var(--text5);
-  border: 1px solid var(--border);
-}
-.bib-tabs {
-  display: flex; gap: 7px; padding: 10px 18px 0; flex-wrap: wrap;
-}
-.bib-tab {
-  font-size: 11px; font-weight: 600;
-  padding: 5px 13px; border-radius: 20px;
-  border: 1px solid var(--border2); color: var(--text4);
-  background: transparent; cursor: pointer;
-  transition: all 0.15s;
-}
-.bib-tab.active { background: var(--bg3); color: var(--text2); border-color: var(--border2); }
-
-.book-item {
-  display: flex; gap: 13px; padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer; transition: background 0.15s;
-}
-.book-item:active { background: var(--bg2); }
-.book-cover {
-  width: 48px; height: 66px; border-radius: 7px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px; overflow: hidden;
-}
-.book-info { flex: 1; min-width: 0; }
-.book-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3px; }
-.book-title { font-family: var(--serif); font-size: 14px; color: var(--text); line-height: 1.2; }
-.book-badge {
-  font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 20px; flex-shrink: 0; margin-left: 6px;
-}
-.book-badge.reading { background: var(--green-bg); color: #4A7850; }
-.book-badge.done    { background: var(--bg3); color: var(--text3); }
-.book-author { font-size: 11px; font-weight: 500; color: var(--text4); margin-bottom: 6px; }
-.book-meta { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 500; color: var(--text5); }
-.book-stars { color: var(--gold2); font-size: 11px; letter-spacing: -1px; }
-
-.add-book-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  margin: 12px 18px; padding: 14px;
-  background: transparent; border: 1.5px dashed var(--border2);
-  border-radius: 14px; cursor: pointer;
-  font-size: 13px; font-weight: 600; color: var(--text4);
-  transition: all 0.15s;
-}
-.add-book-btn:active { background: var(--bg2); }
-.add-book-btn .plus { font-size: 18px; color: var(--gold); }
-
-/* ── CALENDARIO PAGE ── */
-.cal-header {
-  padding: 20px 22px 14px; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: flex-end;
-}
-.cal-title { font-family: var(--serif); font-style: italic; font-size: 24px; color: var(--text); }
-.cal-tabs-wrap { display: flex; background: var(--bg3); border-radius: 9px; padding: 3px; gap: 2px; }
-.cal-tab {
-  font-size: 11px; font-weight: 600; padding: 5px 12px;
-  border-radius: 7px; color: var(--text4); cursor: pointer; transition: all 0.15s;
-}
-.cal-tab.active { background: var(--bg); color: var(--text2); }
-.cal-nav {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 22px; border-bottom: 1px solid var(--border);
-}
-.cal-arr { color: var(--text5); font-size: 20px; cursor: pointer; padding: 4px; }
-.cal-period { font-size: 13px; font-weight: 700; color: var(--gold); }
-
-/* Monthly calendar */
-.cal-weekdays {
-  display: grid; grid-template-columns: repeat(7,1fr);
-  padding: 10px 16px 4px;
-}
-.cal-wd { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text5); }
-.cal-week { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; padding: 0 16px; margin-bottom: 5px; }
-.cal-day {
-  aspect-ratio: 1; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 600; cursor: pointer;
-  transition: transform 0.1s;
-}
-.cal-day:active { transform: scale(0.9); }
-.cal-day.empty  { background: transparent; pointer-events: none; }
-.cal-day.no-book { background: var(--bg3); color: var(--text5); }
-.cal-day.booked { color: rgba(30,20,10,0.55); }
-.cal-day.today  { box-shadow: 0 0 0 2px var(--gold); }
-
-/* Annual heatmap */
-.heatmap-scroll { overflow-x: auto; padding: 12px 16px 8px; }
-.heatmap-scroll::-webkit-scrollbar { display: none; }
-.heatmap-inner { display: flex; gap: 3px; width: max-content; }
-.hm-week { display: flex; flex-direction: column; gap: 3px; }
-.hm-day { width: 12px; height: 12px; border-radius: 3px; cursor: pointer; transition: transform 0.1s; }
-.hm-day:active { transform: scale(1.3); }
-.hm-months { display: flex; gap: 3px; padding: 0 16px 4px; width: max-content; }
-.hm-mlbl { font-size: 8px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text5); }
-
-/* Book bars */
-.book-bars { padding: 8px 16px 12px; display: flex; flex-direction: column; gap: 6px; }
-.book-bar {
-  height: 24px; border-radius: 8px;
-  display: flex; align-items: center; padding: 0 11px;
-  font-size: 11px; font-weight: 600;
-}
-.cal-legend { padding: 0 18px 12px; display: flex; flex-direction: column; gap: 7px; }
-.cal-leg { display: flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 500; color: var(--text3); }
-.cal-swatch { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-
-/* ── DETALLE LIBRO ── */
-#page-detail { display: none; }
-#page-detail.active { display: block; }
-.dt-back {
-  display: flex; align-items: center; gap: 6px;
-  padding: 16px 22px 12px; border-bottom: 1px solid var(--border);
-  cursor: pointer;
-}
-.dt-back-arr { font-size: 20px; color: var(--text4); }
-.dt-back-lbl { font-size: 12px; font-weight: 600; color: var(--text4); }
-.dt-hero {
-  display: flex; gap: 16px; padding: 18px 22px;
-  border-bottom: 1px solid var(--border); align-items: flex-start;
-}
-.dt-cover {
-  width: 74px; height: 104px; border-radius: 9px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 38px;
-  overflow: hidden;
-}
-.dt-title { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--text); line-height: 1.15; margin-bottom: 4px; }
-.dt-author { font-size: 12px; font-weight: 600; color: var(--text4); margin-bottom: 8px; }
-.dt-dates { font-size: 11px; font-weight: 500; color: var(--text5); margin-bottom: 10px; }
-.dt-prog-bar { height: 3px; border-radius: 2px; background: var(--bg3); margin-bottom: 5px; }
-.dt-prog-fill { height: 100%; border-radius: 2px; }
-.dt-prog-lbl { font-size: 11px; font-weight: 600; }
-.dt-stats { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); border-bottom: 1px solid var(--border); }
-.dt-stat { padding: 14px 4px; text-align: center; border-right: 1px solid var(--border); }
-.dt-stat:last-child { border-right: none; }
-.dt-stat-n { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--text); line-height: 1; margin-bottom: 5px; }
-.dt-stat-l { font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text5); }
-.dt-section { padding: 14px 22px; border-bottom: 1px solid var(--border); }
-.dt-section:last-child { border-bottom: none; }
-.dt-sec-title { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text5); margin-bottom: 9px; }
-.dt-note { font-size: 13px; font-weight: 500; color: var(--text3); line-height: 1.6; }
-.dt-quote { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--text3); line-height: 1.65; padding-left: 13px; border-left: 2px solid; }
-.dt-mood-row { display: flex; align-items: center; gap: 11px; }
-.dt-mood-n { font-family: var(--serif); font-style: italic; font-size: 20px; }
-.dt-mood-track { flex: 1; height: 2px; background: var(--bg3); border-radius: 1px; position: relative; }
-.dt-mood-ball { position: absolute; top: -4px; width: 9px; height: 9px; border-radius: 50%; }
-.dt-mood-denom { font-size: 11px; font-weight: 600; color: var(--text5); }
-
-/* Textarea / input */
-.dt-textarea {
-  width: 100%;
-  background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: 10px; padding: 11px 13px;
-  font-family: var(--sans); font-size: 13px; font-weight: 500;
-  color: var(--text); resize: none; outline: none;
-  line-height: 1.5; min-height: 72px;
-  transition: border-color 0.2s;
-}
-.dt-textarea:focus { border-color: var(--gold); }
-.dt-textarea::placeholder { color: var(--text5); }
-.dt-input {
-  width: 100%;
-  background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: 10px; padding: 11px 13px;
-  font-family: var(--sans); font-size: 13px; font-weight: 500;
-  color: var(--text); outline: none;
-  transition: border-color 0.2s;
-}
-.dt-input:focus { border-color: var(--gold); }
-.dt-input::placeholder { color: var(--text5); }
-
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 500; display: none;
-  align-items: flex-end;
-}
-.modal-overlay.show { display: flex; }
-.modal {
-  width: 100%; max-width: 430px; margin: 0 auto;
-  background: var(--bg); border-radius: 24px 24px 0 0;
-  border-top: 1px solid var(--border);
-  padding: 20px 20px 40px;
-  max-height: 88vh; overflow-y: auto;
-  animation: slideUp 0.25s ease;
-}
-.modal::-webkit-scrollbar { display: none; }
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 20px; }
-.modal-title { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--text); margin-bottom: 18px; }
-.modal-field { margin-bottom: 14px; }
-.modal-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text5); display: block; margin-bottom: 7px; }
-.modal-input {
-  width: 100%; background: var(--bg2); border: 1px solid var(--border2);
-  border-radius: 12px; padding: 12px 14px;
-  font-family: var(--sans); font-size: 14px; font-weight: 500;
-  color: var(--text); outline: none; transition: border-color 0.2s;
-}
-.modal-input:focus { border-color: var(--gold); }
-.modal-input::placeholder { color: var(--text5); }
-.modal-row { display: flex; gap: 10px; }
-.modal-row .modal-field { flex: 1; }
-.btn-primary {
-  width: 100%; background: var(--text); border: none;
-  border-radius: 14px; padding: 15px;
-  font-family: var(--sans); font-size: 15px; font-weight: 700;
-  color: var(--bg); cursor: pointer; margin-top: 10px;
-  transition: opacity 0.2s;
-}
-.btn-primary:active { opacity: 0.8; }
-.btn-secondary {
-  width: 100%; background: var(--bg2); border: 1px solid var(--border2);
-  border-radius: 14px; padding: 14px;
-  font-family: var(--sans); font-size: 14px; font-weight: 600;
-  color: var(--text3); cursor: pointer; margin-top: 8px;
-  transition: background 0.2s;
-}
-.btn-secondary:active { background: var(--bg3); }
-
-/* Color picker */
-.color-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-.color-opt {
-  width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
-  border: 2.5px solid transparent; transition: border-color 0.15s;
-}
-.color-opt.selected { border-color: var(--text); }
-
-/* Star rating */
-.star-rating { display: flex; gap: 6px; }
-.star-btn { font-size: 22px; cursor: pointer; transition: transform 0.1s; color: var(--text5); }
-.star-btn.active { color: var(--gold2); }
-.star-btn:active { transform: scale(1.2); }
-
-/* Toast */
-.toast {
-  position: fixed; bottom: 80px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--text); border-radius: 20px;
-  padding: 10px 18px; font-size: 13px; font-weight: 600;
-  color: var(--bg); z-index: 1000; opacity: 0;
-  transition: all 0.25s; pointer-events: none; white-space: nowrap;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* Habits edit mode */
-.habit-drag-handle { color: var(--text5); font-size: 18px; margin-right: 4px; cursor: grab; }
-.habit-delete-btn {
-  width: 24px; height: 24px; border-radius: 50%; background: #F0E0E0;
-  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  color: #C06060; font-size: 16px; font-weight: 700; flex-shrink: 0;
-}
-
-/* Empty state */
-.empty-state {
-  text-align: center; padding: 40px 30px;
-  color: var(--text4); font-size: 13px; font-weight: 500; line-height: 1.6;
-}
-.empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; }
-.empty-state .empty-title { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--text3); margin-bottom: 8px; }
+:root{
+  --bg:#F5F1EA;--bg2:#EDE8DF;--bg3:#E8E2D8;--bg4:#E2DBD0;
+  --card:#EDE8DF;--border:#E2DDD4;--border2:#D8D0C8;
+  --text:#1C1814;--text2:#5A4A38;--text3:#8A7A68;--text4:#B0A898;--text5:#C8C0B8;
+  --gold:#8A7A60;--gold2:#A8906A;--gold3:#C0A878;
+  --green:#7BAF8A;--green-bg:#E8F0E8;--red-bg:#F0E8E8;
+  --fin:#5A7A60;--fin-bg:#E8F0E8;
+  --amber:#A8853A;--amber-bg:#F5EDD8;
+  --rose:#8A4A4A;--rose-bg:#F0E8E8;
+  --nav-h:64px;
+  --serif:'DM Serif Display',serif;--sans:'Outfit',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:var(--sans);color:var(--text);-webkit-font-smoothing:antialiased;}
+#app{width:100%;height:100%;max-width:430px;margin:0 auto;display:flex;flex-direction:column;}
+#pages{flex:1;overflow:hidden;position:relative;}
+.page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(var(--nav-h) + 16px);display:none;-webkit-overflow-scrolling:touch;}
+.page::-webkit-scrollbar{display:none;}
+.page.active{display:block;animation:fadeUp 0.2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+#nav{height:var(--nav-h);background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 4px;flex-shrink:0;z-index:100;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 0;background:none;border:none;cursor:pointer;}
+.nav-btn svg{width:19px;height:19px;}
+.nav-btn svg path,.nav-btn svg line,.nav-btn svg polyline,.nav-btn svg rect,.nav-btn svg circle{stroke:var(--text5);transition:stroke 0.2s;}
+.nav-btn .nav-lbl{font-size:9px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text5);transition:color 0.2s;}
+.nav-btn.active .nav-lbl{color:var(--text2);}
+.nav-btn.active svg path,.nav-btn.active svg line,.nav-btn.active svg polyline,.nav-btn.active svg rect,.nav-btn.active svg circle{stroke:var(--gold);}
+.nav-btn .nav-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin-bottom:-2px;display:none;}
+.nav-btn.active .nav-dot{display:block;}
+.nav-edit{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--gold);background:none;border:none;cursor:pointer;flex:1;text-align:center;padding:6px 0;}
+.page-top{padding:22px 22px 14px;border-bottom:1px solid var(--border);}
+.page-title{font-family:var(--serif);font-size:25px;font-style:italic;color:var(--text);line-height:1;}
+.page-sub{font-size:11px;font-weight:500;color:var(--text4);margin-top:4px;}
+.sec-lbl{font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--text5);margin-bottom:7px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin:10px 18px;}
+.divider{height:1px;background:var(--border);margin:0 18px;}
+.inner-tabs{display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px;margin:12px 18px 0;}
+.inner-tab{flex:1;text-align:center;padding:7px;border-radius:8px;font-size:12px;font-weight:600;color:var(--text4);cursor:pointer;transition:all 0.15s;}
+.inner-tab.active{background:var(--bg);color:var(--text2);}
+.toggle{width:44px;height:27px;border-radius:14px;flex-shrink:0;position:relative;transition:background 0.25s;cursor:pointer;}
+.toggle.on{background:var(--green);}
+.toggle.off{background:var(--bg4);}
+.toggle-ball{position:absolute;top:3.5px;width:20px;height:20px;border-radius:50%;background:var(--bg);transition:left 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.15);}
+.toggle.on .toggle-ball{left:20px;}
+.toggle.off .toggle-ball{left:3.5px;}
+/* HOY */
+.hoy-header{padding:22px 22px 14px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--border);}
+.hoy-brand{font-family:var(--serif);font-size:28px;font-style:italic;color:var(--text);line-height:1;}
+.hoy-date-txt{font-size:11px;font-weight:500;color:var(--text4);margin-top:5px;}
+.hoy-ring{position:relative;display:inline-block;}
+.hoy-ring svg{display:block;}
+.hoy-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.hoy-ring-n{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--gold);line-height:1;}
+.hoy-ring-l{font-size:7px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text5);margin-top:2px;}
+.date-nav{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 0 2px;}
+.date-nav-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);font-size:18px;}
+.date-nav-btn:active{background:var(--bg4);}
+.date-nav-lbl{font-size:12px;font-weight:600;color:var(--text3);min-width:96px;text-align:center;}
+.habits-card{background:var(--card);border:1px solid var(--border);border-radius:18px;margin:12px 18px;overflow:hidden;}
+.habits-card-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 10px;border-bottom:1px solid var(--border);}
+.habits-card-title{font-size:12px;font-weight:700;color:var(--text3);}
+.habits-card-edit{font-size:12px;font-weight:600;color:var(--gold2);background:none;border:none;cursor:pointer;}
+.habit-row{display:flex;align-items:center;padding:12px 16px;gap:12px;border-bottom:1px solid var(--bg3);transition:background 0.1s;cursor:pointer;}
+.habit-row:last-child{border-bottom:none;}
+.habit-row:active{background:var(--bg3);}
+.habit-icon{font-size:16px;width:22px;text-align:center;flex-shrink:0;}
+.habit-name{font-size:14px;font-weight:600;color:var(--text);flex:1;}
+.habit-name.done{color:var(--text4);}
+.day-summary{background:var(--card);border:1px solid var(--border);border-radius:14px;margin:0 18px 12px;padding:13px 16px;display:flex;align-items:center;gap:11px;}
+.sum-emoji{font-size:22px;}
+.sum-title{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--text);line-height:1;}
+.sum-sub{font-size:10px;font-weight:500;color:var(--text4);margin-top:3px;}
+/* SEMANA */
+.streak-card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin:12px 18px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;}
+.streak-n{font-family:var(--serif);font-style:italic;font-size:44px;color:var(--text);line-height:1;}
+.streak-sub{font-size:11px;font-weight:500;color:var(--text4);margin-top:3px;}
+.week-circles{display:flex;gap:5px;padding:0 18px;margin-bottom:4px;}
+.wc-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.wc-name{font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text5);}
+.wc-circle{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.wc-circle.full{background:#A8C8A0;color:#2A4A28;}
+.wc-circle.partial{background:#D8C8A8;color:#5A4A28;}
+.wc-circle.empty{background:var(--bg3);color:var(--text5);}
+.wc-circle.today{box-shadow:0 0 0 2px var(--gold);}
+.habit-stat-row{display:flex;align-items:center;padding:10px 16px;gap:10px;border-bottom:1px solid var(--bg3);}
+.habit-stat-row:last-child{border-bottom:none;}
+.hs-name{font-size:12px;font-weight:600;color:var(--text2);flex-shrink:0;width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hs-bar-wrap{flex:1;height:5px;background:var(--bg3);border-radius:3px;}
+.hs-bar{height:100%;border-radius:3px;transition:width 0.5s;}
+.hs-pct{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--gold);width:32px;text-align:right;flex-shrink:0;}
+.insight{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 14px;margin-bottom:7px;display:flex;gap:9px;align-items:flex-start;}
+.insight-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.insight-txt{font-size:12px;font-weight:500;color:var(--text3);line-height:1.5;}
+.insight-txt strong{color:var(--text2);font-weight:700;}
+/* BIBLIOTECA */
+.bib-search{margin:10px 18px 0;background:var(--bg3);border-radius:11px;padding:9px 13px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--text5);border:1px solid var(--border);}
+.bib-filter-tabs{display:flex;gap:6px;padding:10px 18px 0;flex-wrap:wrap;}
+.bib-tab{font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);color:var(--text4);background:transparent;cursor:pointer;transition:all 0.15s;}
+.bib-tab.active{background:var(--bg3);color:var(--text2);}
+.book-item{display:flex;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s;}
+.book-item:active{background:var(--bg2);}
+.book-cover{width:46px;height:64px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.book-info{flex:1;min-width:0;}
+.book-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;}
+.book-title{font-family:var(--serif);font-size:14px;color:var(--text);line-height:1.2;}
+.book-badge{font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:3px 8px;border-radius:20px;flex-shrink:0;margin-left:6px;}
+.book-badge.reading{background:var(--green-bg);color:#4A7850;}
+.book-badge.done{background:var(--bg3);color:var(--text3);}
+.book-badge.abandoned{background:var(--red-bg);color:var(--rose);}
+.book-author{font-size:11px;font-weight:500;color:var(--text4);margin-bottom:5px;}
+.book-meta{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:500;color:var(--text5);}
+.book-stars{color:var(--gold2);font-size:11px;letter-spacing:-1px;}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 18px;padding:14px;background:transparent;border:1.5px dashed var(--border2);border-radius:14px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text4);}
+.add-btn:active{background:var(--bg2);}
+.add-btn .plus{font-size:18px;color:var(--gold);}
+/* CALENDARIO */
+.cal-header-inner{padding:10px 18px 8px;display:flex;justify-content:space-between;align-items:center;}
+.cal-view-tabs{display:flex;background:var(--bg3);border-radius:8px;padding:3px;gap:2px;}
+.cal-view-tab{font-size:11px;font-weight:600;padding:4px 11px;border-radius:6px;color:var(--text4);cursor:pointer;transition:all 0.15s;}
+.cal-view-tab.active{background:var(--bg);color:var(--text2);}
+.cal-nav-row{display:flex;justify-content:space-between;align-items:center;padding:4px 18px 8px;}
+.cal-arr{color:var(--text5);font-size:20px;cursor:pointer;padding:4px 8px;}
+.cal-period{font-size:13px;font-weight:700;color:var(--gold);}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);padding:4px 16px 4px;}
+.cal-wd{text-align:center;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text5);}
+.cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:0 16px;margin-bottom:4px;}
+.cal-day{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;}
+.cal-day:active{transform:scale(0.9);}
+.cal-day.empty{background:transparent;pointer-events:none;}
+.cal-day.no-book{background:var(--bg3);color:var(--text5);}
+.cal-day.booked{color:rgba(30,20,10,0.5);}
+.cal-day.today{box-shadow:0 0 0 2px var(--gold);}
+.cal-legend{padding:8px 18px 12px;display:flex;flex-direction:column;gap:6px;}
+.cal-leg{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:500;color:var(--text3);}
+.cal-swatch{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.heatmap-scroll{overflow-x:auto;padding:8px 16px;-webkit-overflow-scrolling:touch;}
+.heatmap-scroll::-webkit-scrollbar{display:none;}
+.heatmap-inner{display:flex;gap:3px;width:max-content;}
+.hm-week{display:flex;flex-direction:column;gap:3px;}
+.hm-day{width:12px;height:12px;border-radius:3px;cursor:pointer;}
+/* DAILY EDGE */
+.de-header{padding:20px 22px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;}
+.de-title{font-family:var(--serif);font-size:24px;font-style:italic;color:var(--text);line-height:1;}
+.de-badge{background:var(--fin-bg);border:1px solid #B8D4B8;border-radius:20px;padding:5px 11px;font-size:9px;font-weight:700;color:var(--fin);letter-spacing:0.08em;text-transform:uppercase;}
+.de-progress{padding:11px 22px 10px;border-bottom:1px solid var(--border);}
+.de-prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.de-prog-lbl{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text5);}
+.de-prog-count{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--text3);}
+.de-prog-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.de-prog-fill{height:100%;border-radius:2px;background:var(--fin);transition:width 0.4s;}
+.de-streak{padding:10px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.de-streak-n{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--text);line-height:1;}
+.de-streak-unit{font-size:11px;font-weight:600;color:var(--text4);}
+.de-streak-sub{font-size:10px;font-weight:500;color:var(--text5);margin-top:2px;}
+.de-days{display:flex;gap:4px;}
+.de-day{width:26px;height:26px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text5);}
+.de-day.done{background:var(--fin);color:#fff;}
+.de-day.today{background:var(--amber);color:#fff;box-shadow:0 0 0 2px var(--amber-bg);}
+.de-card{background:var(--card);border:1px solid var(--border);border-radius:18px;margin:10px 18px;overflow:hidden;}
+.de-card-head{padding:12px 16px 10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.de-card-type{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;}
+.de-card-status{font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.de-card-status.done{background:var(--fin-bg);color:var(--fin);}
+.de-card-status.pending{background:var(--amber-bg);color:var(--amber);}
+.de-card-status.locked{background:var(--bg3);color:var(--text5);}
+.de-concept-title{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--text);padding:13px 16px 6px;line-height:1.2;}
+.de-concept-body{font-size:12px;font-weight:500;color:var(--text3);padding:0 16px 12px;line-height:1.65;}
+.de-tag{font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-flex;margin:0 16px 12px;}
+.de-take-section{border-top:1px solid var(--border);padding:12px 16px 14px;}
+.de-take-lbl{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-bottom:5px;}
+.de-take-q{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--text2);line-height:1.4;margin-bottom:9px;}
+.de-textarea{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:10px 12px;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--text);resize:none;outline:none;line-height:1.5;min-height:62px;transition:border-color 0.2s;}
+.de-textarea:focus{border-color:var(--fin);}
+.de-textarea::placeholder{color:var(--text5);}
+.de-send-btn{width:100%;margin-top:8px;background:var(--fin);border:none;border-radius:10px;padding:11px;font-family:var(--sans);font-size:13px;font-weight:700;color:#fff;cursor:pointer;}
+.de-send-btn:active{opacity:0.8;}
+.de-feedback{padding:12px 16px 14px;border-top:1px solid var(--border);display:none;}
+.de-feedback.show{display:block;}
+.de-fb-badge{font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px;display:inline-flex;margin-bottom:8px;}
+.de-fb-badge.high{background:var(--fin-bg);color:var(--fin);}
+.de-fb-badge.mid{background:var(--amber-bg);color:var(--amber);}
+.de-fb-txt{font-size:12px;font-weight:500;color:var(--text3);line-height:1.6;}
+.de-fb-txt strong{color:var(--text2);font-weight:700;}
+.de-quiz-body{padding:12px 16px 14px;}
+.de-quiz-q{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--text);line-height:1.4;margin-bottom:12px;}
+.de-opts{display:flex;flex-direction:column;gap:7px;}
+.de-opt{padding:10px 13px;border-radius:11px;border:1.5px solid var(--border2);font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:8px;}
+.de-opt:active{background:var(--bg3);}
+.de-opt.correct{background:#E8F2E8;border-color:#90C890;color:#2A5A2A;}
+.de-opt.wrong{background:var(--rose-bg);border-color:#C89090;color:var(--rose);}
+.de-opt.faded{opacity:0.35;cursor:default;}
+.de-opt-icon{font-size:13px;flex-shrink:0;width:16px;text-align:center;}
+.de-explanation{margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text3);line-height:1.55;display:none;}
+.de-explanation.show{display:block;}
+.de-lock{padding:22px 16px;text-align:center;}
+.de-lock-icon{font-size:28px;margin-bottom:7px;}
+.de-lock-txt{font-size:12px;font-weight:600;color:var(--text5);line-height:1.5;}
+.de-case-content{display:none;}
+.de-card.unlocked .de-lock{display:none;}
+.de-card.unlocked .de-case-content{display:block;}
+.de-co{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--text);padding:11px 16px 3px;}
+.de-co-desc{font-size:11px;font-weight:500;color:var(--text4);padding:0 16px 10px;}
+.de-metrics{display:flex;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.de-m{flex:1;padding:10px 4px;text-align:center;border-right:1px solid var(--border);}
+.de-m:last-child{border-right:none;}
+.de-mn{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--text);line-height:1;}
+.de-ml{font-size:8px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text5);margin-top:3px;}
+.de-decision{padding:12px 16px 14px;}
+.de-dec-lbl{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.de-dec-q{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--text2);line-height:1.4;margin-bottom:10px;}
+.de-dec-btns{display:flex;gap:8px;margin-bottom:10px;}
+.de-dec-btn{flex:1;padding:12px;border-radius:12px;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid;transition:all 0.15s;}
+.de-go-btn{background:var(--fin-bg);border-color:#90C490;color:var(--fin);}
+.de-go-btn.selected{background:var(--fin);color:#fff;}
+.de-nogo-btn{background:var(--rose-bg);border-color:#C89090;color:var(--rose);}
+.de-nogo-btn.selected{background:var(--rose);color:#fff;}
+.de-arg-wrap{display:none;}
+.de-arg-wrap.show{display:block;}
+.de-submit-btn{width:100%;background:var(--text);border:none;border-radius:10px;padding:11px;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--bg);cursor:pointer;margin-top:8px;}
+.de-verdict{display:none;padding:10px 0 2px;}
+.de-verdict.show{display:block;}
+.de-verdict-badge{font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px;display:inline-flex;margin-bottom:8px;}
+.de-verdict-ok{background:var(--fin-bg);color:var(--fin);}
+.de-verdict-fail{background:var(--rose-bg);color:var(--rose);}
+.de-verdict-txt{font-size:12px;font-weight:500;color:var(--text3);line-height:1.6;}
+.de-verdict-txt strong{color:var(--text2);font-weight:700;}
+.de-completion{background:var(--text);border-radius:14px;padding:18px;text-align:center;margin:4px 18px 10px;display:none;}
+.de-completion.show{display:block;}
+.de-comp-emoji{font-size:28px;margin-bottom:8px;}
+.de-comp-title{font-family:var(--serif);font-style:italic;font-size:18px;color:#F5F1EA;margin-bottom:4px;}
+.de-comp-sub{font-size:12px;font-weight:500;color:rgba(245,241,234,0.55);}
+/* DETALLE */
+.dt-back{display:flex;align-items:center;gap:6px;padding:16px 22px 12px;border-bottom:1px solid var(--border);cursor:pointer;}
+.dt-back-arr{font-size:20px;color:var(--text4);}
+.dt-back-lbl{font-size:12px;font-weight:600;color:var(--text4);}
+.dt-hero{display:flex;gap:16px;padding:18px 22px;border-bottom:1px solid var(--border);align-items:flex-start;}
+.dt-cover{width:72px;height:100px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:36px;}
+.dt-title{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--text);line-height:1.15;margin-bottom:4px;}
+.dt-author{font-size:12px;font-weight:600;color:var(--text4);margin-bottom:8px;}
+.dt-dates{font-size:11px;font-weight:500;color:var(--text5);margin-bottom:10px;}
+.dt-prog{height:3px;border-radius:2px;background:var(--bg3);margin-bottom:5px;}
+.dt-prog-fill{height:100%;border-radius:2px;}
+.dt-prog-lbl{font-size:11px;font-weight:600;}
+.dt-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--border);}
+.dt-stat{padding:13px 4px;text-align:center;border-right:1px solid var(--border);}
+.dt-stat:last-child{border-right:none;}
+.dt-stat-n{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--text);line-height:1;margin-bottom:4px;}
+.dt-stat-l{font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text5);}
+.dt-section{padding:13px 22px;border-bottom:1px solid var(--border);}
+.dt-section:last-child{border-bottom:none;}
+.dt-sec-title{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text5);margin-bottom:8px;}
+.dt-note{font-size:13px;font-weight:500;color:var(--text3);line-height:1.6;}
+.dt-quote{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--text3);line-height:1.65;padding-left:12px;border-left:2px solid;}
+/* MODALES */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.28);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:500;display:none;align-items:flex-end;}
+.modal-overlay.show{display:flex;}
+.modal{width:100%;max-width:430px;margin:0 auto;background:var(--bg);border-radius:24px 24px 0 0;border-top:1px solid var(--border2);padding:20px 20px 40px;max-height:88vh;overflow-y:auto;animation:slideUp 0.25s ease;}
+.modal::-webkit-scrollbar{display:none;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 18px;}
+.modal-title{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--text);margin-bottom:16px;}
+.modal-field{margin-bottom:13px;}
+.modal-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text5);display:block;margin-bottom:6px;}
+.modal-input{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:11px;padding:12px 13px;font-family:var(--sans);font-size:14px;font-weight:500;color:var(--text);outline:none;transition:border-color 0.2s;}
+.modal-input:focus{border-color:var(--gold);}
+.modal-input::placeholder{color:var(--text5);}
+.modal-row{display:flex;gap:9px;}
+.modal-row .modal-field{flex:1;}
+.btn-primary{width:100%;background:var(--text);border:none;border-radius:13px;padding:14px;font-family:var(--sans);font-size:15px;font-weight:700;color:var(--bg);cursor:pointer;margin-top:8px;}
+.btn-primary:active{opacity:0.8;}
+.btn-secondary{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:13px;padding:13px;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;margin-top:8px;}
+.color-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.color-opt{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:border-color 0.15s;}
+.color-opt.selected{border-color:var(--text);}
+.star-rating{display:flex;gap:6px;}
+.star-btn{font-size:22px;cursor:pointer;color:var(--text5);}
+.star-btn.active{color:var(--gold2);}
+.day-selector{display:flex;gap:7px;flex-wrap:wrap;padding-top:2px;}
+.day-btn-sel{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--text4);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.day-btn-sel.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.habit-delete-btn{width:26px;height:26px;border-radius:50%;background:#F0E0E0;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#C06060;font-size:16px;font-weight:700;flex-shrink:0;}
+.empty-state{text-align:center;padding:36px 28px;color:var(--text4);font-size:13px;font-weight:500;line-height:1.6;}
+.empty-icon{font-size:34px;margin-bottom:10px;}
+.empty-title{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--text3);margin-bottom:7px;}
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);border-radius:20px;padding:10px 18px;font-size:13px;font-weight:600;color:var(--bg);z-index:1000;opacity:0;transition:all 0.25s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="pages">
 
-    <!-- ══════════ HOY ══════════ -->
+    <!-- HOY -->
     <div class="page active" id="page-hoy">
       <div class="hoy-header">
         <div>
           <div class="hoy-brand">Antifrágil</div>
-          <div class="hoy-date" id="hoy-date"></div>
+          <div class="hoy-date-txt" id="hoy-date"></div>
         </div>
-        <div class="hoy-score">
-          <div class="hoy-score-ring">
-            <svg width="58" height="58" viewBox="0 0 58 58">
-              <circle cx="29" cy="29" r="23" fill="none" stroke="#E2DDD4" stroke-width="5.5"/>
-              <circle cx="29" cy="29" r="23" fill="none" stroke="#A8906A" stroke-width="5.5"
-                id="score-arc"
-                stroke-dasharray="144.5" stroke-dashoffset="144.5"
-                stroke-linecap="round" transform="rotate(-90 29 29)"
-                style="transition: stroke-dashoffset 0.6s ease;"/>
-            </svg>
-            <div class="hoy-score-center">
-              <div class="hoy-score-n" id="score-num">0</div>
-              <div class="hoy-score-l">estructura</div>
-            </div>
+        <div class="hoy-ring">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#E2DDD4" stroke-width="5.5"/>
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#A8906A" stroke-width="5.5"
+              id="score-arc" stroke-dasharray="138.2" stroke-dashoffset="138.2"
+              stroke-linecap="round" transform="rotate(-90 28 28)" style="transition:stroke-dashoffset 0.5s ease;"/>
+          </svg>
+          <div class="hoy-ring-center">
+            <div class="hoy-ring-n" id="score-num">0</div>
+            <div class="hoy-ring-l">hoy</div>
           </div>
         </div>
       </div>
-
-      <!-- Date nav -->
       <div class="date-nav">
         <button class="date-nav-btn" onclick="changeDay(-1)">‹</button>
-        <div class="date-nav-label" id="date-nav-label">Hoy</div>
+        <div class="date-nav-lbl" id="date-nav-lbl">Hoy</div>
         <button class="date-nav-btn" onclick="changeDay(1)">›</button>
       </div>
-
-      <!-- Habits -->
       <div class="habits-card">
-        <div class="habits-card-header">
+        <div class="habits-card-hdr">
           <span class="habits-card-title">Rutinas del día</span>
           <button class="habits-card-edit" onclick="showPage('edit')">Editar</button>
         </div>
         <div id="habits-list"></div>
       </div>
-
-      <!-- Summary -->
       <div class="day-summary">
-        <div class="day-sum-left">
-          <div class="day-sum-emoji" id="sum-emoji">😐</div>
-          <div>
-            <div class="day-sum-title" id="sum-title">—</div>
-            <div class="day-sum-sub" id="sum-sub">Registra tus hábitos</div>
-          </div>
+        <div class="sum-emoji" id="sum-emoji">😐</div>
+        <div>
+          <div class="sum-title" id="sum-title">—</div>
+          <div class="sum-sub" id="sum-sub">Registra tus hábitos</div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════ SEMANA ══════════ -->
+    <!-- SEMANA -->
     <div class="page" id="page-semana">
       <div class="page-top">
         <div class="page-title">Esta semana</div>
-        <div class="page-subtitle" id="week-range"></div>
+        <div class="page-sub" id="week-range"></div>
       </div>
-
-      <!-- Streak -->
       <div class="streak-card">
-        <div class="streak-left">
-          <div class="streak-lbl">Racha actual</div>
+        <div>
+          <div class="sec-lbl" style="margin-bottom:4px;">Racha actual</div>
           <div class="streak-n" id="streak-n">0</div>
           <div class="streak-sub">días consecutivos</div>
         </div>
-        <div class="streak-icon">🔥</div>
+        <div style="font-size:38px;">🔥</div>
       </div>
-
-      <!-- Week circles -->
-      <div style="padding: 4px 18px 0;">
-        <div class="section-label">Esta semana</div>
-      </div>
+      <div style="padding:0 18px 6px;"><div class="sec-lbl">Esta semana</div></div>
       <div class="week-circles" id="week-circles"></div>
-      <div style="height:12px;"></div>
-
+      <div style="height:10px;"></div>
       <div class="divider"></div>
-
-      <!-- Habit consistency -->
-      <div style="padding: 14px 18px 6px;">
-        <div class="section-label">Consistencia · últimos 7 días</div>
-      </div>
-      <div class="card" style="overflow:hidden;">
-        <div id="habit-stats-list"></div>
-      </div>
-
-      <div style="padding: 14px 18px 6px;">
-        <div class="section-label">Patrones detectados</div>
-      </div>
-      <div style="padding: 0 18px 14px;" id="insights-list"></div>
+      <div style="padding:12px 18px 6px;"><div class="sec-lbl">Consistencia · 7 días</div></div>
+      <div class="card" style="overflow:hidden;"><div id="habit-stats-list"></div></div>
+      <div style="padding:12px 18px 6px;"><div class="sec-lbl">Patrones</div></div>
+      <div style="padding:0 18px 14px;" id="insights-list"></div>
     </div>
 
-    <!-- ══════════ BIBLIOTECA ══════════ -->
+    <!-- BIBLIOTECA -->
     <div class="page" id="page-bib">
-      <div class="page-top" style="display:flex;justify-content:space-between;align-items:flex-end;padding:22px 22px 14px;">
+      <div style="padding:20px 22px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;">
         <div>
           <div class="page-title">Biblioteca</div>
-          <div class="page-subtitle" id="bib-subtitle">Tu línea temporal intelectual</div>
+          <div class="page-sub" id="bib-sub">Tu línea temporal intelectual</div>
         </div>
         <button onclick="openAddBook()" style="width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;color:var(--gold);">+</button>
       </div>
-      <div class="bib-search">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input id="bib-search-inp" type="text" placeholder="Buscar libro o autor..." style="background:none;border:none;outline:none;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text);flex:1;" oninput="renderBooks()">
+      <div class="inner-tabs">
+        <div class="inner-tab active" id="bib-tab-libros" onclick="setBibInnerTab('libros')">Libros</div>
+        <div class="inner-tab" id="bib-tab-eras" onclick="setBibInnerTab('eras')">Eras de lectura</div>
       </div>
-      <div class="bib-tabs" id="bib-tabs">
-        <button class="bib-tab active" data-filter="all" onclick="setBibFilter(this)">Todos</button>
-        <button class="bib-tab" data-filter="reading" onclick="setBibFilter(this)">Leyendo</button>
-        <button class="bib-tab" data-filter="done" onclick="setBibFilter(this)">Leídos</button>
-        <button class="bib-tab" data-filter="abandoned" onclick="setBibFilter(this)">Abandonados</button>
+      <div id="bib-libros-content">
+        <div class="bib-search">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="bib-search-inp" type="text" placeholder="Buscar libro o autor..." style="background:none;border:none;outline:none;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text);flex:1;" oninput="renderBookList()">
+        </div>
+        <div class="bib-filter-tabs">
+          <button class="bib-tab active" data-filter="all" onclick="setBibFilter(this)">Todos</button>
+          <button class="bib-tab" data-filter="reading" onclick="setBibFilter(this)">Leyendo</button>
+          <button class="bib-tab" data-filter="done" onclick="setBibFilter(this)">Leídos</button>
+          <button class="bib-tab" data-filter="abandoned" onclick="setBibFilter(this)">Abandonados</button>
+        </div>
+        <div id="books-list" style="margin-top:8px;"></div>
+        <button class="add-btn" onclick="openAddBook()"><span class="plus">+</span> Añadir libro</button>
       </div>
-      <div id="books-list" style="margin-top:10px;"></div>
-      <button class="add-book-btn" onclick="openAddBook()">
-        <span class="plus">+</span> Añadir libro
-      </button>
+      <div id="bib-eras-content" style="display:none;">
+        <div class="cal-header-inner">
+          <div class="sec-lbl" style="margin-bottom:0;">Eras de lectura</div>
+          <div class="cal-view-tabs">
+            <div class="cal-view-tab active" id="cal-tab-anual" onclick="setCalView('anual')">Anual</div>
+            <div class="cal-view-tab" id="cal-tab-mensual" onclick="setCalView('mensual')">Mensual</div>
+          </div>
+        </div>
+        <div class="cal-nav-row">
+          <span class="cal-arr" onclick="calNav(-1)">‹</span>
+          <span class="cal-period" id="cal-period"></span>
+          <span class="cal-arr" onclick="calNav(1)">›</span>
+        </div>
+        <div id="cal-content"></div>
+      </div>
     </div>
 
-    <!-- ══════════ CALENDARIO ══════════ -->
-    <div class="page" id="page-cal">
-      <div class="cal-header">
-        <div class="cal-title">Eras de lectura</div>
-        <div class="cal-tabs-wrap">
-          <div class="cal-tab active" id="cal-tab-anual" onclick="setCalView('anual')">Anual</div>
-          <div class="cal-tab" id="cal-tab-mensual" onclick="setCalView('mensual')">Mensual</div>
+    <!-- DAILY EDGE -->
+    <div class="page" id="page-edge">
+      <div class="de-header">
+        <div>
+          <div class="de-title">Daily Edge</div>
+          <div style="font-size:11px;font-weight:500;color:var(--text4);margin-top:4px;">Tu entrenamiento inversor</div>
+        </div>
+        <div class="de-badge">IA</div>
+      </div>
+      <div class="de-progress">
+        <div class="de-prog-top">
+          <span class="de-prog-lbl">Progreso hoy</span>
+          <span class="de-prog-count" id="de-prog-count">0 / 3</span>
+        </div>
+        <div class="de-prog-track"><div class="de-prog-fill" id="de-prog-fill" style="width:0%;"></div></div>
+      </div>
+      <div class="de-streak">
+        <div>
+          <div style="display:flex;align-items:baseline;gap:5px;">
+            <div class="de-streak-n" id="de-streak-n">0</div>
+            <div class="de-streak-unit">días 🔥</div>
+          </div>
+          <div class="de-streak-sub">Racha inversora</div>
+        </div>
+        <div class="de-days" id="de-days"></div>
+      </div>
+      <div id="de-cards-wrap" style="padding-bottom:4px;"></div>
+      <div class="de-completion" id="de-completion">
+        <div class="de-comp-emoji">🏆</div>
+        <div class="de-comp-title">Daily Edge completado</div>
+        <div class="de-comp-sub">Racha activa · Vuelve mañana</div>
+      </div>
+      <!-- BACKUP -->
+      <div style="margin:4px 18px 16px;padding:13px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;">
+        <div class="sec-lbl" style="margin-bottom:10px;">Datos · Backup</div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="exportBackup()" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar
+          </button>
+          <button onclick="importBackup()" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Importar
+          </button>
         </div>
       </div>
-      <div class="cal-nav">
-        <span class="cal-arr" onclick="calNav(-1)">‹</span>
-        <span class="cal-period" id="cal-period"></span>
-        <span class="cal-arr" onclick="calNav(1)">›</span>
-      </div>
-      <div id="cal-content"></div>
     </div>
 
-    <!-- ══════════ DETALLE LIBRO ══════════ -->
+    <!-- DETALLE LIBRO -->
     <div class="page" id="page-detail">
       <div class="dt-back" onclick="showPage('bib')">
         <span class="dt-back-arr">‹</span>
@@ -740,24 +472,21 @@ html, body {
       <div id="detail-content"></div>
     </div>
 
-    <!-- ══════════ EDITAR HÁBITOS ══════════ -->
+    <!-- EDITAR HÁBITOS -->
     <div class="page" id="page-edit">
-      <div class="page-top" style="display:flex;justify-content:space-between;align-items:center;">
+      <div style="padding:22px 22px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
         <div class="page-title">Editar</div>
         <button onclick="showPage('hoy')" style="font-family:var(--sans);font-size:13px;font-weight:700;color:var(--gold);background:none;border:none;cursor:pointer;">Listo</button>
       </div>
-      <div style="padding:14px 18px 6px;"><div class="section-label">Hábitos activos</div></div>
+      <div style="padding:12px 18px 6px;"><div class="sec-lbl">Hábitos activos</div></div>
       <div class="card" style="overflow:hidden;" id="edit-habits-list"></div>
-      <button class="add-book-btn" onclick="openAddHabit()" style="margin-top:10px;">
-        <span class="plus">+</span> Añadir hábito
-      </button>
+      <button class="add-btn" onclick="openAddHabit()"><span class="plus">+</span> Añadir hábito</button>
     </div>
 
-  </div><!-- /pages -->
+  </div>
 
-  <!-- NAV -->
   <nav id="nav">
-    <button class="nav-btn-edit" onclick="showPage('edit')">Editar</button>
+    <button class="nav-edit" onclick="showPage('edit')">Editar</button>
     <button class="nav-btn active" id="nav-hoy" onclick="navTo('hoy')">
       <div class="nav-dot"></div>
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -773,86 +502,51 @@ html, body {
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <span class="nav-lbl">Biblioteca</span>
     </button>
-    <button class="nav-btn" id="nav-cal" onclick="navTo('cal')">
+    <button class="nav-btn" id="nav-edge" onclick="navTo('edge')">
       <div class="nav-dot"></div>
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
-      <span class="nav-lbl">Calendario</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      <span class="nav-lbl">Investor</span>
     </button>
   </nav>
 </div>
 
-<!-- ── MODAL AÑADIR LIBRO ── -->
+<!-- MODAL LIBRO -->
 <div class="modal-overlay" id="modal-book">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="book-modal-title">Añadir libro</div>
-    <div class="modal-field">
-      <label class="modal-label">Título</label>
-      <input class="modal-input" id="inp-book-title" placeholder="El nombre del viento..." type="text">
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">Autor</label>
-      <input class="modal-input" id="inp-book-author" placeholder="Patrick Rothfuss" type="text">
-    </div>
+    <div class="modal-field"><label class="modal-label">Título</label><input class="modal-input" id="inp-book-title" placeholder="El nombre del viento..." type="text"></div>
+    <div class="modal-field"><label class="modal-label">Autor</label><input class="modal-input" id="inp-book-author" placeholder="Patrick Rothfuss" type="text"></div>
     <div class="modal-row">
-      <div class="modal-field">
-        <label class="modal-label">Emoji portada</label>
-        <input class="modal-input" id="inp-book-emoji" placeholder="📚" type="text" maxlength="2" style="text-align:center;font-size:22px;">
-      </div>
-      <div class="modal-field">
-        <label class="modal-label">Estado</label>
+      <div class="modal-field"><label class="modal-label">Emoji portada</label><input class="modal-input" id="inp-book-emoji" placeholder="📚" type="text" maxlength="2" style="text-align:center;font-size:22px;"></div>
+      <div class="modal-field"><label class="modal-label">Estado</label>
         <select class="modal-input" id="inp-book-status" style="font-weight:600;">
-          <option value="reading">Leyendo</option>
-          <option value="done">Leído</option>
-          <option value="abandoned">Abandonado</option>
+          <option value="reading">Leyendo</option><option value="done">Leído</option><option value="abandoned">Abandonado</option>
         </select>
       </div>
     </div>
     <div class="modal-row">
-      <div class="modal-field">
-        <label class="modal-label">Inicio</label>
-        <input class="modal-input" id="inp-book-start" type="date">
-      </div>
-      <div class="modal-field">
-        <label class="modal-label">Fin</label>
-        <input class="modal-input" id="inp-book-end" type="date">
-      </div>
+      <div class="modal-field"><label class="modal-label">Inicio</label><input class="modal-input" id="inp-book-start" type="date"></div>
+      <div class="modal-field"><label class="modal-label">Fin</label><input class="modal-input" id="inp-book-end" type="date"></div>
     </div>
-    <div class="modal-field">
-      <label class="modal-label">Color de era</label>
-      <div class="color-grid" id="color-picker"></div>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">Rating</label>
-      <div class="star-rating" id="star-rating"></div>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">Notas</label>
-      <textarea class="modal-input" id="inp-book-notes" placeholder="Qué te aportó..." style="resize:none;min-height:72px;line-height:1.5;"></textarea>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">Cita destacada</label>
-      <textarea class="modal-input" id="inp-book-quote" placeholder="La frase que más te impactó..." style="resize:none;min-height:60px;line-height:1.5;"></textarea>
-    </div>
+    <div class="modal-field"><label class="modal-label">Color de era</label><div class="color-grid" id="color-picker"></div></div>
+    <div class="modal-field"><label class="modal-label">Rating</label><div class="star-rating" id="star-rating"></div></div>
+    <div class="modal-field"><label class="modal-label">Notas</label><textarea class="modal-input" id="inp-book-notes" placeholder="Qué te aportó..." style="resize:none;min-height:68px;line-height:1.5;"></textarea></div>
+    <div class="modal-field"><label class="modal-label">Cita destacada</label><textarea class="modal-input" id="inp-book-quote" placeholder="La frase que más te impactó..." style="resize:none;min-height:58px;line-height:1.5;"></textarea></div>
     <button class="btn-primary" onclick="saveBook()">Guardar</button>
     <button class="btn-secondary" onclick="closeModal('modal-book')">Cancelar</button>
   </div>
 </div>
 
-<!-- ── MODAL AÑADIR HÁBITO ── -->
+<!-- MODAL HÁBITO -->
 <div class="modal-overlay" id="modal-habit">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Añadir hábito</div>
-    <div class="modal-field">
-      <label class="modal-label">Nombre</label>
-      <input class="modal-input" id="inp-habit-name" placeholder="Meditación, Lectura..." type="text">
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">Emoji</label>
-      <input class="modal-input" id="inp-habit-emoji" placeholder="🧘" type="text" maxlength="2" style="text-align:center;font-size:22px;">
-    </div>
-    <button class="btn-primary" onclick="saveHabit()">Añadir</button>
+    <div class="modal-title" id="modal-habit-title">Añadir hábito</div>
+    <div class="modal-field"><label class="modal-label">Nombre</label><input class="modal-input" id="inp-habit-name" placeholder="Meditación, Lectura..." type="text"></div>
+    <div class="modal-field"><label class="modal-label">Emoji</label><input class="modal-input" id="inp-habit-emoji" placeholder="🧘" type="text" maxlength="2" style="text-align:center;font-size:22px;"></div>
+    <div class="modal-field"><label class="modal-label">Días activos</label><div class="day-selector" id="day-selector"></div></div>
+    <button class="btn-primary" onclick="saveHabit()">Guardar</button>
     <button class="btn-secondary" onclick="closeModal('modal-habit')">Cancelar</button>
   </div>
 </div>
@@ -860,649 +554,403 @@ html, body {
 <div class="toast" id="toast"></div>
 
 <script>
-// ════════════ DATA ════════════
-const DB = {
-  get: k => { try { return JSON.parse(localStorage.getItem('af3_'+k)); } catch { return null; } },
-  set: (k,v) => { try { localStorage.setItem('af3_'+k, JSON.stringify(v)); } catch {} },
-  day: d => DB.get('day_'+d) || {},
-  setDay: (d,v) => DB.set('day_'+d, v),
-  habits: () => DB.get('habits') || DEFAULT_HABITS,
-  setHabits: v => DB.set('habits', v),
-  books: () => DB.get('books') || [],
-  setBooks: v => DB.set('books', v),
+const DB={
+  get:k=>{try{return JSON.parse(localStorage.getItem('af4_'+k));}catch{return null;}},
+  set:(k,v)=>{try{localStorage.setItem('af4_'+k,JSON.stringify(v));}catch{}},
+  day:d=>DB.get('day_'+d)||{},
+  setDay:(d,v)=>DB.set('day_'+d,v),
+  habits:()=>DB.get('habits')||DEFAULT_HABITS,
+  setHabits:v=>DB.set('habits',v),
+  books:()=>DB.get('books')||[],
+  setBooks:v=>DB.set('books',v),
+  edge:d=>DB.get('edge_'+d)||{done:0},
+  setEdge:(d,v)=>DB.set('edge_'+d,v),
 };
-
-const DEFAULT_HABITS = [
-  { id:'h1', name:'Despertarme 7:30', icon:'☀️' },
-  { id:'h2', name:'Ejercicio',        icon:'🏋️' },
-  { id:'h3', name:'Lectura',          icon:'📖' },
-  { id:'h4', name:'Deep work',        icon:'⚡' },
-  { id:'h5', name:'No doomscrolling', icon:'📵' },
-  { id:'h6', name:'Alimentación consciente', icon:'🥗' },
-  { id:'h7', name:'Meditación',       icon:'🧘' },
-  { id:'h8', name:'Diario',           icon:'📓' },
+const ALL_DAYS=[0,1,2,3,4,5,6];
+const DEFAULT_HABITS=[
+  {id:'h1',name:'Despertarme 7:30',icon:'☀️',activeDays:[1,2,3,4,5]},
+  {id:'h2',name:'Ejercicio',icon:'🏋️',activeDays:ALL_DAYS},
+  {id:'h3',name:'Lectura',icon:'📖',activeDays:ALL_DAYS},
+  {id:'h4',name:'Deep work',icon:'⚡',activeDays:[1,2,3,4,5]},
+  {id:'h5',name:'No doomscrolling',icon:'📵',activeDays:ALL_DAYS},
+  {id:'h6',name:'Alimentación consciente',icon:'🥗',activeDays:ALL_DAYS},
+  {id:'h7',name:'Meditación',icon:'🧘',activeDays:ALL_DAYS},
+  {id:'h8',name:'Diario',icon:'📓',activeDays:ALL_DAYS},
 ];
+const BOOK_COLORS=['#BDD4CC','#C8C0D8','#D4C8A8','#C4D0DC','#D4C0C4','#C8D4B8','#D4C8D0','#C0C8D4','#D8C8B0','#BCC8D0','#D0C8BC','#C4D0C8'];
+function habitsForDow(dow){return DB.habits().filter(h=>(h.activeDays??ALL_DAYS).includes(dow));}
 
-const BOOK_COLORS = [
-  '#BDD4CC','#C8C0D8','#D4C8A8','#C4D0DC',
-  '#D4C0C4','#C8D4B8','#D4C8D0','#C0C8D4',
-  '#D8C8B0','#BCC8D0','#D0C8BC','#C4D0C8',
-];
+let viewDate=fmtDate(new Date()),calView='anual',calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
+let bibCurrentFilter='all',bibInnerTab='libros';
+let editingBookId=null,editingHabitId=null,selectedColor=BOOK_COLORS[0],selectedRating=0,selectedActiveDays=[...ALL_DAYS];
 
-// ════════════ STATE ════════════
-let currentPage = 'hoy';
-let viewDate = fmtDate(new Date());
-let calView = 'anual';
-let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth();
-let bibFilter = 'all';
-let editingBookId = null;
-let selectedColor = BOOK_COLORS[0];
-let selectedRating = 0;
+function fmtDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function parseDate(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d,12,0,0);}
+function todayStr(){return fmtDate(new Date());}
 
-function fmtDate(d) { return d.toISOString().split('T')[0]; }
-function parseDate(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function navTo(page){showPage(page);document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));const btn=document.getElementById('nav-'+page);if(btn)btn.classList.add('active');}
+function showPage(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const el=document.getElementById('page-'+page);if(el)el.classList.add('active');if(page==='hoy')renderHoy();if(page==='semana')renderSemana();if(page==='bib')renderBib();if(page==='edge')renderEdge();if(page==='edit')renderEditHabits();}
 
-// ════════════ NAV ════════════
-function navTo(page) {
-  showPage(page);
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const btn = document.getElementById('nav-'+page);
-  if (btn) btn.classList.add('active');
+function changeDay(delta){const d=parseDate(viewDate);d.setDate(d.getDate()+delta);const next=fmtDate(d);if(next>todayStr())return;viewDate=next;renderHoy();}
+
+function renderHoy(){
+  const d=parseDate(viewDate),today=todayStr();
+  const yd=new Date();yd.setDate(yd.getDate()-1);const yesterday=fmtDate(yd);
+  const DAYS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const MONTHS=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const label=viewDate===today?'Hoy':viewDate===yesterday?'Ayer':`${DAYS[d.getDay()]}, ${d.getDate()} de ${MONTHS[d.getMonth()]}`;
+  document.getElementById('date-nav-lbl').textContent=label;
+  document.getElementById('hoy-date').textContent=`${DAYS[d.getDay()]}, ${d.getDate()} de ${MONTHS[d.getMonth()]}`;
+  const habits=habitsForDow(d.getDay()),dayData=DB.day(viewDate);
+  const done=habits.filter(h=>dayData[h.id]).length;
+  const pct=habits.length?Math.round((done/habits.length)*100):0;
+  const arc=document.getElementById('score-arc'),C=138.2;
+  arc.style.strokeDashoffset=C-(C*pct/100);
+  document.getElementById('score-num').textContent=`${done}/${habits.length}`;
+  const list=document.getElementById('habits-list');
+  if(!habits.length){list.innerHTML='<div style="padding:18px 16px;text-align:center;font-size:13px;color:var(--text5);font-weight:500;">Sin hábitos para hoy</div>';}
+  else{list.innerHTML=habits.map(h=>{const isDone=!!dayData[h.id];return`<div class="habit-row" onclick="toggleHabit('${h.id}')"><span class="habit-icon">${h.icon}</span><span class="habit-name${isDone?' done':''}">${h.name}</span><div class="toggle ${isDone?'on':'off'}"><div class="toggle-ball"></div></div></div>`;}).join('');}
+  const SUMS=[{min:0,emoji:'😐',title:'Sin empezar',sub:'Toca el primer hábito.'},{min:1,emoji:'🌱',title:'Arrancando',sub:'Ya has empezado.'},{min:40,emoji:'🙂',title:'Construyendo',sub:'Vas por buen camino.'},{min:60,emoji:'😊',title:'Buen día',sub:'Sigue construyendo.'},{min:80,emoji:'💪',title:'Día sólido',sub:'Gran consistencia.'},{min:100,emoji:'🌟',title:'Día completo',sub:'Perfecto. Sin excusas.'}];
+  let s=SUMS[0];for(const x of SUMS){if(pct>=x.min)s=x;}
+  document.getElementById('sum-emoji').textContent=s.emoji;
+  document.getElementById('sum-title').textContent=s.title;
+  document.getElementById('sum-sub').textContent=s.sub;
+}
+function toggleHabit(id){const data=DB.day(viewDate);data[id]=!data[id];DB.setDay(viewDate,data);renderHoy();}
+
+function renderSemana(){
+  const today=new Date(),days7=[];
+  for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);days7.push(fmtDate(d));}
+  const MONTHS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const d0=parseDate(days7[0]),d6=parseDate(days7[6]);
+  document.getElementById('week-range').textContent=`${d0.getDate()} ${MONTHS[d0.getMonth()]} – ${d6.getDate()} ${MONTHS[d6.getMonth()]} ${d6.getFullYear()}`;
+  const allHabits=DB.habits(),ts=todayStr();
+  let streak=0,dd=new Date(today);
+  while(true){const ds=fmtDate(dd),dow=parseDate(ds).getDay(),ah=habitsForDow(dow),data=DB.day(ds),done=ah.filter(h=>data[h.id]).length;if(ah.length===0){dd.setDate(dd.getDate()-1);if(streak>365)break;continue;}if(done===0&&ds!==ts)break;if(done>0)streak++;dd.setDate(dd.getDate()-1);if(streak>365)break;}
+  document.getElementById('streak-n').textContent=streak;
+  const DNL=['L','M','X','J','V','S','D'];
+  document.getElementById('week-circles').innerHTML=days7.map(ds=>{const dow=parseDate(ds).getDay(),ah=habitsForDow(dow),data=DB.day(ds),done=ah.filter(h=>data[h.id]).length,total=ah.length,pct=total?done/total:0,cls=total===0?'empty':pct===0?'empty':pct>=0.85?'full':'partial',disp=(parseDate(ds).getDay()+6)%7;return`<div class="wc-col"><div class="wc-name">${DNL[disp]}</div><div class="wc-circle ${cls}${ds===ts?' today':''}">${done||'—'}</div></div>`;}).join('');
+  document.getElementById('habit-stats-list').innerHTML=allHabits.map(h=>{const ad=h.activeDays??ALL_DAYS,applicable=days7.filter(ds=>ad.includes(parseDate(ds).getDay())),doneDays=applicable.filter(ds=>DB.day(ds)[h.id]).length,total=applicable.length,pct=total?Math.round((doneDays/total)*100):0,color=pct>=85?'#A8C8A0':pct>=57?'#C8C0A8':'#D8C0A8';return`<div class="habit-stat-row"><span class="hs-name">${h.icon} ${h.name}</span><div class="hs-bar-wrap"><div class="hs-bar" style="width:${pct}%;background:${color};"></div></div><span class="hs-pct">${doneDays}/${total}</span></div>`;}).join('');
+  const insights=[];
+  let bestDay=null,bestScore=-1;
+  days7.forEach(ds=>{const ah=habitsForDow(parseDate(ds).getDay()),done=ah.filter(h=>DB.day(ds)[h.id]).length;if(done>bestScore){bestScore=done;bestDay=ds;}});
+  if(bestDay&&bestScore>0){const DNE=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'],bd=parseDate(bestDay);insights.push({icon:'⭐',text:`Tu mejor día fue el <strong>${DNE[bd.getDay()]}</strong> con ${bestScore} hábitos`});}
+  let bestH=null,bestC=-1;
+  allHabits.forEach(h=>{const ad=h.activeDays??ALL_DAYS,c=days7.filter(ds=>ad.includes(parseDate(ds).getDay())&&DB.day(ds)[h.id]).length;if(c>bestC){bestC=c;bestH=h;}});
+  if(bestH&&bestC>0)insights.push({icon:'💪',text:`<strong>${bestH.icon} ${bestH.name}</strong> es tu hábito más consistente`});
+  document.getElementById('insights-list').innerHTML=insights.length?insights.map(i=>`<div class="insight"><span class="insight-icon">${i.icon}</span><span class="insight-txt">${i.text}</span></div>`).join(''):'<div class="insight"><span class="insight-icon">📊</span><span class="insight-txt">Registra más días para ver patrones.</span></div>';
 }
 
-function showPage(page) {
-  currentPage = page;
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const el = document.getElementById('page-'+page);
-  if (el) el.classList.add('active');
-  if (page === 'hoy')    renderHoy();
-  if (page === 'semana') renderSemana();
-  if (page === 'bib')    renderBooks();
-  if (page === 'cal')    renderCal();
-  if (page === 'edit')   renderEditHabits();
+function setBibInnerTab(tab){bibInnerTab=tab;document.getElementById('bib-tab-libros').classList.toggle('active',tab==='libros');document.getElementById('bib-tab-eras').classList.toggle('active',tab==='eras');document.getElementById('bib-libros-content').style.display=tab==='libros'?'':'none';document.getElementById('bib-eras-content').style.display=tab==='eras'?'':'none';if(tab==='eras')renderCal();}
+function renderBib(){renderBookList();if(bibInnerTab==='eras')renderCal();}
+function setBibFilter(btn){document.querySelectorAll('.bib-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');bibCurrentFilter=btn.dataset.filter;renderBookList();}
+function renderBookList(){
+  const books=DB.books(),query=(document.getElementById('bib-search-inp')?.value||'').toLowerCase();
+  const filtered=books.filter(b=>{const mf=bibCurrentFilter==='all'||b.status===bibCurrentFilter,mq=!query||b.title.toLowerCase().includes(query)||(b.author||'').toLowerCase().includes(query);return mf&&mq;});
+  const reading=books.filter(b=>b.status==='reading').length;
+  document.getElementById('bib-sub').textContent=books.length?`${books.length} libro${books.length>1?'s':''} · ${reading} leyendo`:'Tu línea temporal intelectual';
+  const list=document.getElementById('books-list');
+  if(!filtered.length){list.innerHTML=`<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Sin libros aún</div>Añade tu primer libro.</div>`;return;}
+  list.innerHTML=filtered.map(b=>{const stars=b.rating?'★'.repeat(b.rating)+'☆'.repeat(5-b.rating):'',dur=b.start&&b.end?daysBetween(b.start,b.end)+' días':b.start?'Leyendo':'',statusLabel={reading:'Leyendo',done:'Leído',abandoned:'Abandonado'}[b.status]||'';return`<div class="book-item" onclick="openDetail('${b.id}')"><div class="book-cover" style="background:${b.color}22;">${b.emoji||'📚'}</div><div class="book-info"><div class="book-row"><div class="book-title">${b.title}</div><span class="book-badge ${b.status}">${statusLabel}</span></div><div class="book-author">${b.author||''}</div><div class="book-meta">${b.start?`<span>${b.start}${b.end?' → '+b.end:''}</span>`:''}${dur?`<span>· ${dur}</span>`:''}<span class="book-stars">${stars}</span></div></div></div>`;}).join('');
 }
-
-// ════════════ DATE NAV ════════════
-function changeDay(delta) {
-  const d = parseDate(viewDate);
-  d.setDate(d.getDate() + delta);
-  if (d > new Date()) return;
-  viewDate = fmtDate(d);
-  renderHoy();
-}
-
-// ════════════ HOY ════════════
-function renderHoy() {
-  // Date label
-  const d = parseDate(viewDate);
-  const today = fmtDate(new Date());
-  const yesterday = fmtDate(new Date(Date.now()-86400000));
-  const DAYS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  let label;
-  if (viewDate === today) label = 'Hoy';
-  else if (viewDate === yesterday) label = 'Ayer';
-  else label = `${DAYS[d.getDay()]}, ${d.getDate()} de ${MONTHS[d.getMonth()]}`;
-  document.getElementById('date-nav-label').textContent = label;
-
-  const h = d.getHours ? d.getHours() : new Date().getHours();
-  const now = new Date();
-  const hr = now.getHours();
-  let greeting = hr < 12 ? 'Buenos días' : hr < 20 ? 'Buenas tardes' : 'Buenas noches';
-  const DAYS2 = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-  document.getElementById('hoy-date').textContent = viewDate === today
-    ? `${DAYS[d.getDay()]}, ${d.getDate()} de ${MONTHS[d.getMonth()]}`
-    : `${DAYS[d.getDay()]}, ${d.getDate()} de ${MONTHS[d.getMonth()]}`;
-
-  const habits = DB.habits();
-  const dayData = DB.day(viewDate);
-  const done = habits.filter(h => dayData[h.id]).length;
-  const pct = habits.length ? Math.round((done/habits.length)*100) : 0;
-
-  // Score arc
-  const arc = document.getElementById('score-arc');
-  const circumference = 144.5;
-  const offset = circumference - (circumference * pct / 100);
-  arc.style.strokeDashoffset = offset;
-  document.getElementById('score-num').textContent = done + '/' + habits.length;
-
-  // Habits list
-  const list = document.getElementById('habits-list');
-  list.innerHTML = habits.map(h => {
-    const isDone = !!dayData[h.id];
-    return `<div class="habit-row" onclick="toggleHabit('${h.id}')">
-      <span class="habit-icon">${h.icon}</span>
-      <span class="habit-name${isDone?' done':''}">${h.name}</span>
-      <div class="toggle ${isDone?'on':'off'}">
-        <div class="toggle-ball"></div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // Summary
-  const summaries = [
-    { min:0,  emoji:'😐', title:'Sin empezar',      sub:'Toca el primer hábito.' },
-    { min:1,  emoji:'🌱', title:'Arrancando',        sub:'Ya has empezado.' },
-    { min:40, emoji:'🙂', title:'Construyendo',      sub:'Vas por buen camino.' },
-    { min:60, emoji:'😊', title:'Buen día',          sub:'Sigue construyendo.' },
-    { min:80, emoji:'💪', title:'Día sólido',        sub:'Gran consistencia.' },
-    { min:100,emoji:'🌟', title:'Día completo',      sub:'Perfecto. Sin excusas.' },
-  ];
-  let s = summaries[0];
-  for (const x of summaries) { if (pct >= x.min) s = x; }
-  document.getElementById('sum-emoji').textContent = s.emoji;
-  document.getElementById('sum-title').textContent = s.title;
-  document.getElementById('sum-sub').textContent = s.sub;
-}
-
-function toggleHabit(id) {
-  const data = DB.day(viewDate);
-  data[id] = !data[id];
-  DB.setDay(viewDate, data);
-  renderHoy();
-}
-
-// ════════════ SEMANA ════════════
-function renderSemana() {
-  const today = new Date();
-  const days7 = [];
-  for (let i=6;i>=0;i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate()-i);
-    days7.push(fmtDate(d));
-  }
-  const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  const d0 = parseDate(days7[0]), d6 = parseDate(days7[6]);
-  document.getElementById('week-range').textContent =
-    `${d0.getDate()} ${MONTHS[d0.getMonth()]} – ${d6.getDate()} ${MONTHS[d6.getMonth()]} ${d6.getFullYear()}`;
-
-  const habits = DB.habits();
-  const todayStr = fmtDate(today);
-
-  // Streak
-  let streak = 0;
-  let dd = new Date(today);
-  while(true) {
-    const ds = fmtDate(dd);
-    const data = DB.day(ds);
-    const done = habits.filter(h => data[h.id]).length;
-    if (done === 0 && ds !== todayStr) break;
-    if (done > 0) streak++;
-    dd.setDate(dd.getDate()-1);
-    if (streak > 365) break;
-  }
-  document.getElementById('streak-n').textContent = streak;
-
-  // Week circles
-  const DAY_NAMES = ['L','M','X','J','V','S','D'];
-  const wc = document.getElementById('week-circles');
-  wc.innerHTML = days7.map((ds,i) => {
-    const data = DB.day(ds);
-    const done = habits.filter(h => data[h.id]).length;
-    const total = habits.length;
-    const pct = total ? done/total : 0;
-    let cls = pct === 0 ? 'empty' : pct >= 0.85 ? 'full' : 'partial';
-    const isToday = ds === todayStr;
-    const dow = (parseDate(ds).getDay()+6)%7; // Mon=0
-    return `<div class="wc-col">
-      <div class="wc-name">${DAY_NAMES[dow]}</div>
-      <div class="wc-circle ${cls}${isToday?' today':''}">${done||'—'}</div>
-    </div>`;
-  }).join('');
-
-  // Habit stats
-  const statList = document.getElementById('habit-stats-list');
-  statList.innerHTML = habits.map(h => {
-    const done7 = days7.filter(ds => DB.day(ds)[h.id]).length;
-    const pct = Math.round((done7/7)*100);
-    const color = pct >= 85 ? '#A8C8A0' : pct >= 57 ? '#C8C0A8' : '#D8C0A8';
-    return `<div class="habit-stat-row">
-      <span class="hs-name">${h.icon} ${h.name}</span>
-      <div class="hs-bar-wrap"><div class="hs-bar" style="width:${pct}%;background:${color};"></div></div>
-      <span class="hs-pct">${done7}/7</span>
-    </div>`;
-  }).join('');
-
-  // Insights
-  const insights = generateInsights(days7, habits);
-  const ins = document.getElementById('insights-list');
-  ins.innerHTML = insights.map(i =>
-    `<div class="insight"><span class="insight-icon">${i.icon}</span><span class="insight-txt">${i.text}</span></div>`
-  ).join('') || `<div class="insight"><span class="insight-icon">📊</span><span class="insight-txt">Registra más días para ver patrones automáticos.</span></div>`;
-}
-
-function generateInsights(days7, habits) {
-  const insights = [];
-  const today = fmtDate(new Date());
-
-  // Best day
-  let bestDay = null, bestScore = -1;
-  days7.forEach(ds => {
-    const done = habits.filter(h => DB.day(ds)[h.id]).length;
-    if (done > bestScore) { bestScore = done; bestDay = ds; }
-  });
-  if (bestDay && bestScore > 0) {
-    const DAY_NAMES_ES = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-    const d = parseDate(bestDay);
-    insights.push({ icon:'⭐', text: `Tu mejor día fue el <strong>${DAY_NAMES_ES[d.getDay()]}</strong> con ${bestScore}/${habits.length} hábitos` });
-  }
-
-  // Most consistent habit
-  let bestH = null, bestC = -1;
-  habits.forEach(h => {
-    const c = days7.filter(ds => DB.day(ds)[h.id]).length;
-    if (c > bestC) { bestC = c; bestH = h; }
-  });
-  if (bestH && bestC > 0) {
-    insights.push({ icon:'💪', text: `<strong>${bestH.icon} ${bestH.name}</strong> es tu hábito más consistente — ${bestC}/7 días` });
-  }
-
-  return insights;
-}
-
-// ════════════ BIBLIOTECA ════════════
-let bibCurrentFilter = 'all';
-
-function setBibFilter(btn) {
-  document.querySelectorAll('.bib-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  bibCurrentFilter = btn.dataset.filter;
-  renderBooks();
-}
-
-function renderBooks() {
-  const books = DB.books();
-  const query = (document.getElementById('bib-search-inp')?.value || '').toLowerCase();
-  const filtered = books.filter(b => {
-    const matchFilter = bibCurrentFilter === 'all' || b.status === bibCurrentFilter;
-    const matchQuery = !query || b.title.toLowerCase().includes(query) || (b.author||'').toLowerCase().includes(query);
-    return matchFilter && matchQuery;
-  });
-
-  const countReading = books.filter(b=>b.status==='reading').length;
-  document.getElementById('bib-subtitle').textContent = books.length
-    ? `${books.length} libro${books.length>1?'s':''} · ${countReading} leyendo ahora`
-    : 'Tu línea temporal intelectual';
-
-  const list = document.getElementById('books-list');
-  if (!filtered.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Sin libros aún</div>Añade tu primer libro para empezar tu línea temporal.</div>`;
-    return;
-  }
-
-  list.innerHTML = filtered.map(b => {
-    const stars = b.rating ? '★'.repeat(b.rating)+'☆'.repeat(5-b.rating) : '';
-    const dur = b.start && b.end ? daysBetween(b.start,b.end)+' días' : b.start ? 'Leyendo' : '';
-    const statusLabel = {reading:'Leyendo',done:'Leído',abandoned:'Abandonado'}[b.status]||'';
-    const statusCls = {reading:'reading',done:'done',abandoned:'done'}[b.status]||'done';
-    return `<div class="book-item" onclick="openDetail('${b.id}')">
-      <div class="book-cover" style="background:${b.color}22;">${b.emoji||'📚'}</div>
-      <div class="book-info">
-        <div class="book-row">
-          <div class="book-title">${b.title}</div>
-          <span class="book-badge ${statusCls}">${statusLabel}</span>
-        </div>
-        <div class="book-author">${b.author||''}</div>
-        <div class="book-meta">
-          ${b.start ? `<span>${b.start}${b.end?' → '+b.end:''}</span>` : ''}
-          ${dur ? `<span>· ${dur}</span>` : ''}
-          ${stars ? `<span class="book-stars">${stars}</span>` : ''}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function openDetail(id) {
-  const book = DB.books().find(b => b.id === id);
-  if (!book) return;
-  const dur = book.start && book.end ? daysBetween(book.start,book.end)+' días' : book.start ? 'En curso' : '—';
-  const stars = book.rating ? '★'.repeat(book.rating)+'☆'.repeat(5-book.rating) : '—';
-
-  document.getElementById('detail-content').innerHTML = `
-    <div class="dt-hero">
-      <div class="dt-cover" style="background:${book.color}33;">${book.emoji||'📚'}</div>
-      <div style="flex:1;min-width:0;">
-        <div class="dt-title">${book.title}</div>
-        <div class="dt-author">${book.author||''}</div>
-        <div class="dt-dates">${book.start||''}${book.end?' → '+book.end:''} · ${dur}</div>
-        <div class="dt-prog-bar"><div class="dt-prog-fill" style="width:${book.status==='done'?100:book.status==='reading'?50:0}%;background:${book.color};"></div></div>
-        <div class="dt-prog-lbl" style="color:${book.color};">${book.status==='done'?'Completado':book.status==='reading'?'Leyendo':'Abandonado'}</div>
-      </div>
-    </div>
-    <div class="dt-stats">
-      <div class="dt-stat"><div class="dt-stat-n">${dur.replace(' días','')}</div><div class="dt-stat-l">días</div></div>
-      <div class="dt-stat"><div class="dt-stat-n">${book.pages||'—'}</div><div class="dt-stat-l">páginas</div></div>
-      <div class="dt-stat"><div class="dt-stat-n">${book.rating||'—'}</div><div class="dt-stat-l">rating</div></div>
-      <div class="dt-stat"><div class="dt-stat-n">${stars.split('★').length-1}/5</div><div class="dt-stat-l">estrellas</div></div>
-    </div>
-    ${book.quote ? `<div class="dt-section"><div class="dt-sec-title">Cita destacada</div><div class="dt-quote" style="border-color:${book.color};">${book.quote}</div></div>` : ''}
-    ${book.notes ? `<div class="dt-section"><div class="dt-sec-title">Notas</div><div class="dt-note">${book.notes}</div></div>` : ''}
-    <div class="dt-section" style="display:flex;gap:10px;padding-top:14px;border-top:1px solid var(--border);">
-      <button onclick="openEditBook('${book.id}')" style="flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:12px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text3);cursor:pointer;">Editar</button>
-      <button onclick="deleteBook('${book.id}')" style="flex:1;background:#F0E8E8;border:1px solid #D8C0C0;border-radius:12px;padding:12px;font-family:var(--sans);font-size:13px;font-weight:600;color:#9A5050;cursor:pointer;">Eliminar</button>
-    </div>
-  `;
+function openDetail(id){
+  const book=DB.books().find(b=>b.id===id);if(!book)return;
+  const dur=book.start&&book.end?daysBetween(book.start,book.end)+' días':'—';
+  const statusPct={done:100,reading:50,abandoned:0}[book.status]||0;
+  document.getElementById('detail-content').innerHTML=`<div class="dt-hero"><div class="dt-cover" style="background:${book.color}33;">${book.emoji||'📚'}</div><div style="flex:1;min-width:0;"><div class="dt-title">${book.title}</div><div class="dt-author">${book.author||''}</div><div class="dt-dates">${book.start||''}${book.end?' → '+book.end:''} · ${dur}</div><div class="dt-prog"><div class="dt-prog-fill" style="width:${statusPct}%;background:${book.color};"></div></div><div class="dt-prog-lbl" style="color:${book.color};">${{done:'Completado',reading:'Leyendo',abandoned:'Abandonado'}[book.status]||''}</div></div></div><div class="dt-stats"><div class="dt-stat"><div class="dt-stat-n">${dur.replace(' días','')}</div><div class="dt-stat-l">días</div></div><div class="dt-stat"><div class="dt-stat-n">${book.pages||'—'}</div><div class="dt-stat-l">páginas</div></div><div class="dt-stat"><div class="dt-stat-n">${book.rating||'—'}</div><div class="dt-stat-l">rating</div></div><div class="dt-stat"><div class="dt-stat-n">${book.status==='done'?'✓':'…'}</div><div class="dt-stat-l">estado</div></div></div>${book.quote?`<div class="dt-section"><div class="dt-sec-title">Cita destacada</div><div class="dt-quote" style="border-color:${book.color};">${book.quote}</div></div>`:''}${book.notes?`<div class="dt-section"><div class="dt-sec-title">Notas</div><div class="dt-note">${book.notes}</div></div>`:''}<div class="dt-section" style="display:flex;gap:10px;"><button onclick="openEditBook('${book.id}')" style="flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:12px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text3);cursor:pointer;">Editar</button><button onclick="deleteBook('${book.id}')" style="flex:1;background:#F0E8E8;border:1px solid #D8C0C0;border-radius:12px;padding:12px;font-family:var(--sans);font-size:13px;font-weight:600;color:#9A5050;cursor:pointer;">Eliminar</button></div>`;
   showPage('detail');
 }
+function deleteBook(id){if(!confirm('¿Eliminar este libro?'))return;DB.setBooks(DB.books().filter(b=>b.id!==id));showToast('Libro eliminado');showPage('bib');}
+function daysBetween(a,b){return Math.max(1,Math.round((new Date(b)-new Date(a))/86400000));}
 
-function deleteBook(id) {
-  if (!confirm('¿Eliminar este libro?')) return;
-  DB.setBooks(DB.books().filter(b => b.id !== id));
-  showToast('Libro eliminado');
-  showPage('bib');
+function setCalView(v){calView=v;document.getElementById('cal-tab-anual').classList.toggle('active',v==='anual');document.getElementById('cal-tab-mensual').classList.toggle('active',v==='mensual');renderCal();}
+function calNav(delta){if(calView==='anual')calYear+=delta;else{calMonth+=delta;if(calMonth<0){calMonth=11;calYear--;}if(calMonth>11){calMonth=0;calYear++;}}renderCal();}
+function renderCal(){
+  const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('cal-period').textContent=calView==='anual'?calYear:`${MONTHS[calMonth]} ${calYear}`;
+  const books=DB.books(),colorMap={};
+  books.forEach(b=>{if(!b.start||!b.color)return;const start=new Date(b.start),end=b.end?new Date(b.end):new Date();let d=new Date(start);while(d<=end){colorMap[fmtDate(d)]={color:b.color,title:b.title};d.setDate(d.getDate()+1);}});
+  calView==='mensual'?renderCalMonthly(colorMap,books):renderCalAnnual(colorMap,books);
+}
+function renderCalMonthly(colorMap,books){
+  const today=todayStr(),first=new Date(calYear,calMonth,1),last=new Date(calYear,calMonth+1,0),startDow=(first.getDay()+6)%7;
+  let html=`<div class="cal-weekdays">`;['L','M','X','J','V','S','D'].forEach(d=>html+=`<div class="cal-wd">${d}</div>`);html+=`</div>`;
+  let day=1;
+  for(let w=0;w<6;w++){html+=`<div class="cal-week">`;for(let d=0;d<7;d++){if(w===0&&d<startDow||day>last.getDate()){html+=`<div class="cal-day empty"></div>`;continue;}const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`,entry=colorMap[ds],style=entry?`background:${entry.color};`:'background:var(--bg3);color:var(--text5);';html+=`<div class="cal-day${entry?' booked':' no-book'}${ds===today?' today':''}" style="${style}">${day}</div>`;day++;}html+=`</div>`;if(day>last.getDate())break;}
+  const monthBooks=[...new Set(Object.entries(colorMap).filter(([k])=>k.startsWith(`${calYear}-${String(calMonth+1).padStart(2,'0')}`)).map(([,v])=>v.title))];
+  const booksMonth=books.filter(b=>monthBooks.includes(b.title));
+  if(booksMonth.length){html+=`<div class="cal-legend">`;booksMonth.forEach(b=>{html+=`<div class="cal-leg"><div class="cal-swatch" style="background:${b.color};"></div>${b.title}${b.author?' — '+b.author:''}</div>`;});html+=`</div>`;}
+  document.getElementById('cal-content').innerHTML=html;
+}
+function renderCalAnnual(colorMap,books){
+  const today=new Date(),todayS=todayStr(),start=new Date(calYear,0,1),end=new Date(calYear,11,31);
+  const gs=new Date(start);gs.setDate(gs.getDate()-((gs.getDay()+6)%7));
+  let html=`<div class="heatmap-scroll"><div class="heatmap-inner">`;
+  let d=new Date(gs);
+  while(d<=end||(d.getDay()+6)%7!==0){if((d.getDay()+6)%7===0)html+=`<div class="hm-week">`;const ds=fmtDate(d),isYear=d.getFullYear()===calYear,isFuture=d>today,entry=colorMap[ds],isToday=ds===todayS,bg=!isYear||isFuture?'var(--bg3)':entry?entry.color:'var(--bg3)',op=!isYear||isFuture?'0.3':'1',brd=isToday?'border:1.5px solid var(--gold);':'';html+=`<div class="hm-day" style="background:${bg};opacity:${op};${brd}" title="${entry?entry.title:''}"></div>`;if((d.getDay()+6)%7===6)html+=`</div>`;d.setDate(d.getDate()+1);if((d.getDay()+6)%7===0&&d>end)break;}
+  html+=`</div></div>`;
+  const booksYear=books.filter(b=>b.color&&b.start);
+  if(booksYear.length){html+=`<div class="cal-legend">`;booksYear.forEach(b=>{html+=`<div class="cal-leg"><div class="cal-swatch" style="background:${b.color};"></div>${b.title}${b.author?' — '+b.author:''}</div>`;});html+=`</div>`;}
+  else html+=`<div class="empty-state" style="padding:20px;"><div class="empty-icon">📅</div><div class="empty-title">Sin eras aún</div>Añade libros con fechas.</div>`;
+  document.getElementById('cal-content').innerHTML=html;
 }
 
-function daysBetween(a,b) { return Math.max(1, Math.round((new Date(b)-new Date(a))/86400000)); }
+function openAddBook(){editingBookId=null;document.getElementById('book-modal-title').textContent='Añadir libro';['inp-book-title','inp-book-author','inp-book-notes','inp-book-quote'].forEach(id=>document.getElementById(id).value='');document.getElementById('inp-book-emoji').value='📚';document.getElementById('inp-book-status').value='reading';document.getElementById('inp-book-start').value=fmtDate(new Date());document.getElementById('inp-book-end').value='';selectedColor=BOOK_COLORS[0];selectedRating=0;renderColorPicker();renderStarRating();openModal('modal-book');}
+function openEditBook(id){const book=DB.books().find(b=>b.id===id);if(!book)return;editingBookId=id;document.getElementById('book-modal-title').textContent='Editar libro';document.getElementById('inp-book-title').value=book.title||'';document.getElementById('inp-book-author').value=book.author||'';document.getElementById('inp-book-emoji').value=book.emoji||'📚';document.getElementById('inp-book-status').value=book.status||'reading';document.getElementById('inp-book-start').value=book.start||'';document.getElementById('inp-book-end').value=book.end||'';document.getElementById('inp-book-notes').value=book.notes||'';document.getElementById('inp-book-quote').value=book.quote||'';selectedColor=book.color||BOOK_COLORS[0];selectedRating=book.rating||0;renderColorPicker();renderStarRating();openModal('modal-book');}
+function renderColorPicker(){document.getElementById('color-picker').innerHTML=BOOK_COLORS.map(c=>`<div class="color-opt${c===selectedColor?' selected':''}" style="background:${c};" onclick="pickColor('${c}')"></div>`).join('');}
+function pickColor(c){selectedColor=c;renderColorPicker();}
+function renderStarRating(){document.getElementById('star-rating').innerHTML=[1,2,3,4,5].map(n=>`<span class="star-btn${n<=selectedRating?' active':''}" onclick="pickStar(${n})">★</span>`).join('');}
+function pickStar(n){selectedRating=n;renderStarRating();}
+function saveBook(){const title=document.getElementById('inp-book-title').value.trim();if(!title){showToast('Añade un título');return;}const book={id:editingBookId||'b'+Date.now(),title,author:document.getElementById('inp-book-author').value.trim(),emoji:document.getElementById('inp-book-emoji').value||'📚',status:document.getElementById('inp-book-status').value,start:document.getElementById('inp-book-start').value,end:document.getElementById('inp-book-end').value,color:selectedColor,rating:selectedRating,notes:document.getElementById('inp-book-notes').value.trim(),quote:document.getElementById('inp-book-quote').value.trim(),pages:null};const books=DB.books();if(editingBookId){const idx=books.findIndex(b=>b.id===editingBookId);if(idx>-1)books[idx]=book;else books.unshift(book);}else books.unshift(book);DB.setBooks(books);closeModal('modal-book');renderBookList();if(editingBookId)openDetail(book.id);showToast('Libro guardado ✓');}
 
-// ════════════ CALENDARIO ════════════
-function setCalView(v) {
-  calView = v;
-  document.getElementById('cal-tab-anual').classList.toggle('active', v==='anual');
-  document.getElementById('cal-tab-mensual').classList.toggle('active', v==='mensual');
-  renderCal();
-}
+function renderEditHabits(){const habits=DB.habits();document.getElementById('edit-habits-list').innerHTML=habits.map(h=>{const ad=h.activeDays??ALL_DAYS,DNL=['D','L','M','X','J','V','S'],daysTag=ad.length===7?'Todos los días':ad.map(d=>DNL[d]).join(' · ');return`<div class="habit-row" style="align-items:center;"><span class="habit-icon">${h.icon}</span><div style="flex:1;min-width:0;"><div class="habit-name" style="margin-bottom:2px;">${h.name}</div><div style="font-size:10px;font-weight:600;color:var(--text5);">${daysTag}</div></div><button onclick="openEditHabit('${h.id}')" style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:5px 10px;font-family:var(--sans);font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;margin-right:8px;flex-shrink:0;">Editar</button><button class="habit-delete-btn" onclick="deleteHabit('${h.id}')">×</button></div>`;}).join('');}
+function deleteHabit(id){DB.setHabits(DB.habits().filter(h=>h.id!==id));renderEditHabits();showToast('Hábito eliminado');}
+function openAddHabit(){editingHabitId=null;document.getElementById('modal-habit-title').textContent='Añadir hábito';document.getElementById('inp-habit-name').value='';document.getElementById('inp-habit-emoji').value='';selectedActiveDays=[...ALL_DAYS];renderDaySelector();openModal('modal-habit');}
+function openEditHabit(id){const h=DB.habits().find(h=>h.id===id);if(!h)return;editingHabitId=id;document.getElementById('modal-habit-title').textContent='Editar hábito';document.getElementById('inp-habit-name').value=h.name;document.getElementById('inp-habit-emoji').value=h.icon;selectedActiveDays=[...(h.activeDays??ALL_DAYS)];renderDaySelector();openModal('modal-habit');}
+function renderDaySelector(){const LBLS=['D','L','M','X','J','V','S'];document.getElementById('day-selector').innerHTML=LBLS.map((l,i)=>`<button class="day-btn-sel${selectedActiveDays.includes(i)?' active':''}" onclick="toggleDay(${i})">${l}</button>`).join('');}
+function toggleDay(i){if(selectedActiveDays.includes(i)){if(selectedActiveDays.length===1)return;selectedActiveDays=selectedActiveDays.filter(d=>d!==i);}else selectedActiveDays=[...selectedActiveDays,i].sort((a,b)=>a-b);renderDaySelector();}
+function saveHabit(){const name=document.getElementById('inp-habit-name').value.trim();if(!name){showToast('Añade un nombre');return;}const emoji=document.getElementById('inp-habit-emoji').value||'✓';const habits=DB.habits();if(editingHabitId){const idx=habits.findIndex(h=>h.id===editingHabitId);if(idx>-1)habits[idx]={...habits[idx],name,icon:emoji,activeDays:[...selectedActiveDays]};}else habits.push({id:'h'+Date.now(),name,icon:emoji,activeDays:[...selectedActiveDays]});DB.setHabits(habits);closeModal('modal-habit');renderEditHabits();showToast(editingHabitId?'Hábito actualizado ✓':'Hábito añadido ✓');}
 
-function calNav(delta) {
-  if (calView === 'anual') calYear += delta;
-  else {
-    calMonth += delta;
-    if (calMonth < 0) { calMonth = 11; calYear--; }
-    if (calMonth > 11) { calMonth = 0; calYear++; }
-  }
-  renderCal();
-}
+// ═══════════════ DAILY EDGE — PERSISTENCIA COMPLETA ═══════════════
+// deState ya NO existe en memoria: todo se lee/escribe en DB.edge(todayStr())
+// Estructura del objeto edge diario:
+// { done:0-3, quizAnswered:bool, quizAnswer:int|null, caseDecision:'go'|'nogo'|null,
+//   caseUnlocked:bool, takeText:'', caseText:'', completed:bool }
 
-function renderCal() {
-  const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  document.getElementById('cal-period').textContent = calView === 'anual'
-    ? calYear : `${MONTHS[calMonth]} ${calYear}`;
-
-  const content = document.getElementById('cal-content');
-  const books = DB.books();
-
-  // Build date→color map
-  const colorMap = {};
-  books.forEach(b => {
-    if (!b.start || !b.color) return;
-    const start = new Date(b.start);
-    const end = b.end ? new Date(b.end) : new Date();
-    const d = new Date(start);
-    while (d <= end) {
-      colorMap[fmtDate(d)] = { color: b.color, title: b.title };
-      d.setDate(d.getDate()+1);
-    }
-  });
-
-  if (calView === 'mensual') renderCalMonthly(content, colorMap, books);
-  else renderCalAnnual(content, colorMap, books);
-}
-
-function renderCalMonthly(content, colorMap, books) {
-  const today = fmtDate(new Date());
-  const firstDay = new Date(calYear, calMonth, 1);
-  const lastDay = new Date(calYear, calMonth+1, 0);
-  const startDow = (firstDay.getDay()+6)%7; // Mon=0
-
-  let html = `<div class="cal-weekdays">`;
-  ['L','M','X','J','V','S','D'].forEach(d => html += `<div class="cal-wd">${d}</div>`);
-  html += `</div>`;
-
-  let day = 1;
-  for (let w=0; w<6; w++) {
-    html += `<div class="cal-week">`;
-    for (let d=0; d<7; d++) {
-      if (w===0 && d<startDow || day>lastDay.getDate()) {
-        html += `<div class="cal-day empty"></div>`;
-      } else {
-        const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        const entry = colorMap[ds];
-        const isToday = ds === today;
-        const style = entry ? `background:${entry.color};` : 'background:var(--bg3);color:var(--text5);';
-        html += `<div class="cal-day${entry?' booked':' no-book'}${isToday?' today':''}" style="${style}" title="${entry?entry.title:''}">${day}</div>`;
-        day++;
-      }
-    }
-    html += `</div>`;
-    if (day > lastDay.getDate()) break;
-  }
-
-  // Legend for this month
-  const monthBooks = [...new Set(
-    Object.entries(colorMap)
-      .filter(([k]) => k.startsWith(`${calYear}-${String(calMonth+1).padStart(2,'0')}`))
-      .map(([,v]) => v.title)
-  )];
-  const booksInMonth = books.filter(b => monthBooks.includes(b.title));
-
-  if (booksInMonth.length) {
-    html += `<div class="cal-legend">`;
-    booksInMonth.forEach(b => {
-      html += `<div class="cal-leg"><div class="cal-swatch" style="background:${b.color};"></div>${b.title}${b.author?' — '+b.author:''}</div>`;
-    });
-    html += `</div>`;
-  }
-
-  content.innerHTML = html;
-}
-
-function renderCalAnnual(content, colorMap, books) {
-  const today = new Date();
-  const todayStr = fmtDate(today);
-
-  // Months header
-  const MONTHS_SHORT = ['E','F','M','A','M','J','J','A','S','O','N','D'];
-  let html = `<div style="overflow-x:auto;padding:10px 16px 4px;"><div style="display:flex;gap:3px;width:max-content;margin-bottom:4px;">`;
-
-  // Generate weeks
-  const startOfYear = new Date(calYear,0,1);
-  const endOfYear = new Date(calYear,11,31);
-  const gridStart = new Date(startOfYear);
-  gridStart.setDate(gridStart.getDate()-gridStart.getDay()+1); // Mon
-
-  html += `</div><div style="display:flex;gap:3px;width:max-content;">`;
-
-  let d = new Date(gridStart);
-  let monthTrack = -1;
-
-  while (d <= endOfYear || d.getDay() !== 1) {
-    if (d.getDay() === 1) html += `<div style="display:flex;flex-direction:column;gap:3px;">`;
-    const ds = fmtDate(d);
-    const isThisYear = d.getFullYear() === calYear;
-    const isFuture = d > today;
-    const entry = colorMap[ds];
-    const isToday = ds === todayStr;
-    const bg = !isThisYear || isFuture ? 'var(--bg3)' : entry ? entry.color : 'var(--bg3)';
-    const opacity = !isThisYear || isFuture ? '0.3' : '1';
-    const border = isToday ? `2px solid var(--gold)` : 'none';
-    html += `<div style="width:12px;height:12px;border-radius:3px;background:${bg};opacity:${opacity};border:${border};cursor:pointer;" title="${entry?entry.title:''}"></div>`;
-    if (d.getDay() === 0) html += `</div>`;
-    d.setDate(d.getDate()+1);
-    if (d.getDay() === 1 && d > endOfYear) break;
-  }
-
-  html += `</div></div>`;
-
-  // Legend
-  const booksWithColor = books.filter(b => b.color && b.start);
-  if (booksWithColor.length) {
-    html += `<div class="cal-legend" style="margin-top:8px;">`;
-    booksWithColor.forEach(b => {
-      html += `<div class="cal-leg"><div class="cal-swatch" style="background:${b.color};"></div>${b.title}${b.author?' — '+b.author:''}</div>`;
-    });
-    html += `</div>`;
-  } else {
-    html += `<div class="empty-state" style="padding:20px 30px;"><div class="empty-icon">📅</div><div class="empty-title">Sin eras aún</div>Añade libros con fechas para ver tu línea temporal.</div>`;
-  }
-
-  content.innerHTML = html;
-}
-
-// ════════════ EDITAR HÁBITOS ════════════
-function renderEditHabits() {
-  const habits = DB.habits();
-  const el = document.getElementById('edit-habits-list');
-  el.innerHTML = habits.map((h,i) => `
-    <div class="habit-row">
-      <span class="habit-icon">${h.icon}</span>
-      <span class="habit-name">${h.name}</span>
-      <button class="habit-delete-btn" onclick="deleteHabit('${h.id}')">×</button>
-    </div>
-  `).join('');
-}
-
-function deleteHabit(id) {
-  const habits = DB.habits().filter(h => h.id !== id);
-  DB.setHabits(habits);
-  renderEditHabits();
-  showToast('Hábito eliminado');
-}
-
-function openAddHabit() {
-  document.getElementById('inp-habit-name').value = '';
-  document.getElementById('inp-habit-emoji').value = '';
-  openModal('modal-habit');
-}
-
-function saveHabit() {
-  const name = document.getElementById('inp-habit-name').value.trim();
-  if (!name) { showToast('Añade un nombre'); return; }
-  const emoji = document.getElementById('inp-habit-emoji').value || '✓';
-  const habits = DB.habits();
-  habits.push({ id: 'h'+Date.now(), name, icon: emoji });
-  DB.setHabits(habits);
-  closeModal('modal-habit');
-  renderEditHabits();
-  showToast('Hábito añadido ✓');
-}
-
-// ════════════ LIBRO MODAL ════════════
-function openAddBook() {
-  editingBookId = null;
-  document.getElementById('book-modal-title').textContent = 'Añadir libro';
-  document.getElementById('inp-book-title').value = '';
-  document.getElementById('inp-book-author').value = '';
-  document.getElementById('inp-book-emoji').value = '📚';
-  document.getElementById('inp-book-status').value = 'reading';
-  document.getElementById('inp-book-start').value = fmtDate(new Date());
-  document.getElementById('inp-book-end').value = '';
-  document.getElementById('inp-book-notes').value = '';
-  document.getElementById('inp-book-quote').value = '';
-  selectedColor = BOOK_COLORS[0];
-  selectedRating = 0;
-  renderColorPicker();
-  renderStarRating();
-  openModal('modal-book');
-}
-
-function openEditBook(id) {
-  const book = DB.books().find(b=>b.id===id);
-  if (!book) return;
-  editingBookId = id;
-  document.getElementById('book-modal-title').textContent = 'Editar libro';
-  document.getElementById('inp-book-title').value = book.title||'';
-  document.getElementById('inp-book-author').value = book.author||'';
-  document.getElementById('inp-book-emoji').value = book.emoji||'📚';
-  document.getElementById('inp-book-status').value = book.status||'reading';
-  document.getElementById('inp-book-start').value = book.start||'';
-  document.getElementById('inp-book-end').value = book.end||'';
-  document.getElementById('inp-book-notes').value = book.notes||'';
-  document.getElementById('inp-book-quote').value = book.quote||'';
-  selectedColor = book.color||BOOK_COLORS[0];
-  selectedRating = book.rating||0;
-  renderColorPicker();
-  renderStarRating();
-  openModal('modal-book');
-}
-
-function renderColorPicker() {
-  document.getElementById('color-picker').innerHTML = BOOK_COLORS.map(c =>
-    `<div class="color-opt${c===selectedColor?' selected':''}" style="background:${c};" onclick="pickColor('${c}')"></div>`
-  ).join('');
-}
-
-function pickColor(c) {
-  selectedColor = c;
-  renderColorPicker();
-}
-
-function renderStarRating() {
-  document.getElementById('star-rating').innerHTML = [1,2,3,4,5].map(n =>
-    `<span class="star-btn${n<=selectedRating?' active':''}" onclick="pickStar(${n})">★</span>`
-  ).join('');
-}
-
-function pickStar(n) {
-  selectedRating = n;
-  renderStarRating();
-}
-
-function saveBook() {
-  const title = document.getElementById('inp-book-title').value.trim();
-  if (!title) { showToast('Añade un título'); return; }
-  const book = {
-    id: editingBookId || 'b'+Date.now(),
-    title,
-    author: document.getElementById('inp-book-author').value.trim(),
-    emoji: document.getElementById('inp-book-emoji').value || '📚',
-    status: document.getElementById('inp-book-status').value,
-    start: document.getElementById('inp-book-start').value,
-    end: document.getElementById('inp-book-end').value,
-    color: selectedColor,
-    rating: selectedRating,
-    notes: document.getElementById('inp-book-notes').value.trim(),
-    quote: document.getElementById('inp-book-quote').value.trim(),
-    pages: null,
+function getEdgeState(){
+  const s=DB.edge(todayStr());
+  return {
+    done:         s.done         ?? 0,
+    quizAnswered: s.quizAnswered ?? false,
+    quizAnswer:   s.quizAnswer   ?? null,
+    caseDecision: s.caseDecision ?? null,
+    caseUnlocked: s.caseUnlocked ?? false,
+    takeText:     s.takeText     ?? '',
+    caseText:     s.caseText     ?? '',
+    completed:    s.completed    ?? false,
   };
-  const books = DB.books();
-  if (editingBookId) {
-    const idx = books.findIndex(b=>b.id===editingBookId);
-    if (idx>-1) books[idx]=book; else books.unshift(book);
-  } else {
-    books.unshift(book);
+}
+function saveEdgeState(patch){
+  const current=DB.edge(todayStr());
+  DB.setEdge(todayStr(),{...current,...patch});
+}
+
+function renderEdge(){
+  const today=new Date(),days7=[],ts=todayStr(),DNL=['L','M','X','J','V','S','D'];
+  for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);days7.push(fmtDate(d));}
+  document.getElementById('de-days').innerHTML=days7.map(ds=>{
+    const ed=DB.edge(ds),isToday=ds===ts,isDone=ed.done>=3,disp=(parseDate(ds).getDay()+6)%7;
+    return`<div class="de-day${isDone?' done':''}${isToday?' today':''}">${DNL[disp]}</div>`;
+  }).join('');
+  let streak=0,dd=new Date(today);
+  while(true){const ds=fmtDate(dd),ed=DB.edge(ds);if(ed.done<3&&ds!==ts)break;if(ed.done>=3)streak++;dd.setDate(dd.getDate()-1);if(streak>365)break;}
+  document.getElementById('de-streak-n').textContent=streak;
+  updateEdgeProgress();
+  renderEdgeCards();
+}
+
+function updateEdgeProgress(){
+  const st=getEdgeState();
+  document.getElementById('de-prog-count').textContent=`${st.done} / 3`;
+  document.getElementById('de-prog-fill').style.width=(st.done/3*100)+'%';
+  if(st.done>=3){
+    document.getElementById('de-completion').classList.add('show');
+    saveEdgeState({done:3,completed:true});
   }
-  DB.setBooks(books);
-  closeModal('modal-book');
-  renderBooks();
-  if (editingBookId) openDetail(book.id);
-  showToast('Libro guardado ✓');
 }
 
-// ════════════ MODAL UTILS ════════════
-function openModal(id) { document.getElementById(id).classList.add('show'); }
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function renderEdgeCards(){
+  const st=getEdgeState();
+  const wrap=document.getElementById('de-cards-wrap');wrap.innerHTML='';
 
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
-});
+  // ── Card 1: Concepto + Take ──
+  const c1done=st.done>=1,c1=document.createElement('div');
+  c1.className='de-card';c1.style.margin='10px 18px';
+  c1.innerHTML=`
+    <div class="de-card-head">
+      <span class="de-card-type" style="color:var(--fin);">01 · Concepto + tu take</span>
+      <span class="de-card-status ${c1done?'done':'pending'}">${c1done?'Completado ✓':'Pendiente'}</span>
+    </div>
+    <div class="de-concept-title">Pricing Power</div>
+    <div class="de-concept-body">La capacidad de subir precios sin perder clientes. El indicador más fiable de ventaja competitiva real. Si no tienes alternativas, el vendedor tiene el poder.<br><br>Buffett: <em>"el mejor negocio es el que puede subir precios sin rezar."</em></div>
+    <div class="de-tag" style="background:var(--fin-bg);color:var(--fin);">Ventaja competitiva</div>
+    <div class="de-take-section">
+      <div class="de-take-lbl">Tu take</div>
+      <div class="de-take-q">¿En qué empresa o sector ves más pricing power hoy? ¿Por qué?</div>
+      ${c1done
+        ? `<div class="de-feedback show">
+            <span class="de-fb-badge high">Buen razonamiento</span>
+            <div class="de-fb-txt"><strong>Has identificado bien el núcleo.</strong> El pricing power más duradero viene de switching costs estructurales o identidad de marca. Apple puede subir precios año tras año; Spotify aún lucha para justificar cada subida.</div>
+            ${st.takeText?`<div style="margin-top:10px;padding:9px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text3);line-height:1.5;font-style:italic;">"${st.takeText}"</div>`:''}
+           </div>`
+        : `<textarea class="de-textarea" id="take-input" placeholder="Escribe tu razonamiento en 2-3 líneas...">${st.takeText||''}</textarea>
+           <button class="de-send-btn" onclick="submitTake()">Enviar y ver análisis →</button>`
+      }
+    </div>`;
+  wrap.appendChild(c1);
 
-// ════════════ TOAST ════════════
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2200);
+  // ── Card 2: Quiz ──
+  const c2done=st.done>=2,c2unlocked=st.done>=1;
+  const CORRECT=0;
+  const EXP=[
+    '✓ <strong>Correcto.</strong> El EBITDA ignora el capex. Con inversión agresiva puedes tener EBITDA positivo y FCF negativo justificadamente — si ese capex genera retornos. Amazon lo hizo 15 años.',
+    'Incorrecto. La manipulación de accruals es difícil de mantener 3 años. Lo más común es capex intensivo de crecimiento.',
+    'Incorrecto. El EBITDA es útil cuando el capex es bajo. El error es usarlo sin mirar el FCF.'
+  ];
+  const OPTS=['Alta inversión en capex de crecimiento — positivo si genera retornos','Manipulación contable de accruals','El EBITDA siempre es engañoso'];
+  const c2=document.createElement('div');c2.className='de-card';c2.style.margin='10px 18px';
+  let quizInner='';
+  if(!c2unlocked){
+    quizInner=`<div class="de-lock"><div class="de-lock-icon">🔒</div><div class="de-lock-txt">Completa el concepto<br>para desbloquear</div></div>`;
+  } else {
+    const answered=st.quizAnswered,ua=st.quizAnswer;
+    const optsHtml=OPTS.map((o,i)=>{
+      let cls='de-opt';
+      if(answered){cls+=i===CORRECT?' correct':i===ua&&ua!==CORRECT?' wrong':' faded';}
+      const icon=answered?(i===CORRECT?'✓':i===ua&&ua!==CORRECT?'✗':String.fromCharCode(65+i)):String.fromCharCode(65+i);
+      const onclick=answered?'':`onclick="answerQuiz(${i})"`;
+      return`<div class="${cls}" ${onclick}><span class="de-opt-icon">${icon}</span>${o}</div>`;
+    }).join('');
+    const explainHtml=answered?`<div class="de-explanation show">${EXP[ua??0]}</div>`:`<div class="de-explanation" id="quiz-explain"></div>`;
+    quizInner=`<div class="de-quiz-body"><div class="de-quiz-q">EBITDA crece +25% anual pero Free Cash Flow lleva 3 años negativo. ¿Explicación más probable?</div><div class="de-opts" id="quiz-opts">${optsHtml}${explainHtml}</div></div>`;
+  }
+  c2.innerHTML=`<div class="de-card-head"><span class="de-card-type" style="color:var(--amber);">02 · Quiz rápido</span><span class="de-card-status ${c2done?'done':c2unlocked?'pending':'locked'}">${c2done?'Correcto ✓':c2unlocked?'Pendiente':'Bloqueado'}</span></div>${quizInner}`;
+  wrap.appendChild(c2);
+
+  // ── Card 3: Go / No Go ──
+  const c3done=st.done>=3,c3unlocked=st.done>=2||st.caseUnlocked;
+  const c3=document.createElement('div');c3.className=`de-card${c3unlocked?' unlocked':''}`;c3.style.margin='10px 18px';
+  let caseBody='';
+  if(c3done){
+    caseBody=`<div class="de-verdict show">
+      <span class="de-verdict-badge de-verdict-ok">No Go — correcto ✓</span>
+      <div class="de-verdict-txt"><strong>Bien identificado.</strong> Red flags críticos: margen −18% en sector de márgenes estructuralmente bajos, 2 clientes concentran >80% del ARR, y 9 meses de runway implica dilución agresiva. El riesgo/retorno no cuadra.</div>
+      ${st.caseText?`<div style="margin-top:10px;padding:9px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text3);line-height:1.5;font-style:italic;">"${st.caseText}"</div>`:''}
+    </div>`;
+  } else {
+    caseBody=`
+      <div class="de-dec-btns">
+        <button class="de-dec-btn de-go-btn${st.caseDecision==='go'?' selected':''}" id="btn-go" onclick="pickCase('go')">✓ GO</button>
+        <button class="de-dec-btn de-nogo-btn${st.caseDecision==='nogo'?' selected':''}" id="btn-nogo" onclick="pickCase('nogo')">✗ NO GO</button>
+      </div>
+      <div class="de-arg-wrap${st.caseDecision?' show':''}" id="case-arg-wrap">
+        <textarea class="de-textarea" id="case-arg" placeholder="Escribe tu argumento en 2-3 líneas...">${st.caseText||''}</textarea>
+        <button class="de-submit-btn" onclick="submitCase()">Enviar y ver análisis</button>
+      </div>`;
+  }
+  c3.innerHTML=`
+    <div class="de-card-head"><span class="de-card-type" style="color:var(--gold);">03 · Go / No Go</span><span class="de-card-status ${c3done?'done':c3unlocked?'pending':'locked'}">${c3done?'Completado ✓':c3unlocked?'Pendiente':'Bloqueado'}</span></div>
+    <div class="de-lock"><div class="de-lock-icon">🔒</div><div class="de-lock-txt">Completa el quiz<br>para desbloquear el caso</div></div>
+    <div class="de-case-content">
+      <div class="de-co">Logística última milla · Serie C</div>
+      <div class="de-co-desc">8 ciudades españolas. Contratos con 3 grandes retailers de ecommerce.</div>
+      <div class="de-metrics">
+        <div class="de-m"><div class="de-mn">€4.2M</div><div class="de-ml">ARR</div></div>
+        <div class="de-m"><div class="de-mn">−18%</div><div class="de-ml">Margen op.</div></div>
+        <div class="de-m"><div class="de-mn">2</div><div class="de-ml">Clientes >40%</div></div>
+        <div class="de-m"><div class="de-mn">9m</div><div class="de-ml">Runway</div></div>
+      </div>
+      <div class="de-decision">
+        <div class="de-dec-lbl">Tu decisión</div>
+        <div class="de-dec-q">¿Entrarías como inversor en Serie C? Decide y argumenta.</div>
+        ${caseBody}
+      </div>
+    </div>`;
+  wrap.appendChild(c3);
 }
 
-// ════════════ INIT ════════════
-function init() {
+function submitTake(){
+  const val=document.getElementById('take-input')?.value.trim();
+  if(!val){showToast('Escribe tu razonamiento');return;}
+  const st=getEdgeState();
+  saveEdgeState({done:Math.max(st.done,1),takeText:val});
+  updateEdgeProgress();renderEdgeCards();
+}
+function answerQuiz(idx){
+  const st=getEdgeState();
+  if(st.quizAnswered)return;
+  saveEdgeState({quizAnswered:true,quizAnswer:idx});
+  renderEdgeCards(); // re-render to show result immediately
+  setTimeout(()=>{
+    const st2=getEdgeState();
+    saveEdgeState({done:Math.max(st2.done,2),caseUnlocked:true});
+    updateEdgeProgress();renderEdgeCards();
+    document.querySelector('#page-edge .de-card:last-of-type')?.scrollIntoView({behavior:'smooth',block:'start'});
+  },700);
+}
+function pickCase(decision){
+  saveEdgeState({caseDecision:decision});
+  const bg=document.getElementById('btn-go'),bn=document.getElementById('btn-nogo');
+  if(bg)bg.classList.toggle('selected',decision==='go');
+  if(bn)bn.classList.toggle('selected',decision==='nogo');
+  const wrap=document.getElementById('case-arg-wrap');if(wrap)wrap.classList.add('show');
+}
+function submitCase(){
+  const arg=document.getElementById('case-arg')?.value.trim();
+  if(!arg){showToast('Escribe tu argumento');return;}
+  const st=getEdgeState();
+  if(!st.caseDecision){showToast('Elige Go o No Go');return;}
+  saveEdgeState({done:3,caseText:arg,completed:true});
+  updateEdgeProgress();renderEdgeCards();
+}
+
+// ═══════════════ BACKUP — EXPORT / IMPORT ═══════════════
+function exportBackup(){
+  // Recoge todas las claves af4_ del localStorage
+  const data={_version:1,_date:new Date().toISOString(),_app:'antifragil'};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith('af4_')){
+      try{data[k]=JSON.parse(localStorage.getItem(k));}catch{data[k]=localStorage.getItem(k);}
+    }
+  }
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`antifragil-backup-${fmtDate(new Date())}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Backup descargado ✓');
+}
+function importBackup(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='.json';
+  input.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(data._app!=='antifragil'){showToast('Archivo no válido');return;}
+        // Limpia solo claves af4_ actuales
+        const toDelete=[];
+        for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('af4_'))toDelete.push(k);}
+        toDelete.forEach(k=>localStorage.removeItem(k));
+        // Importa todas las claves af4_
+        Object.entries(data).forEach(([k,v])=>{
+          if(k.startsWith('af4_'))localStorage.setItem(k,JSON.stringify(v));
+        });
+        showToast('Backup restaurado ✓');
+        setTimeout(()=>location.reload(),800);
+      }catch{showToast('Error al leer el archivo');}
+    };
+    reader.readAsText(file);
+  };
+  document.body.appendChild(input);input.click();document.body.removeChild(input);
+}
+
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('show');});});
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+function init(){
   renderHoy();
-  // Init date label
-  const now = new Date();
-  const DAYS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  document.getElementById('hoy-date').textContent = `${DAYS[now.getDay()]}, ${now.getDate()} de ${MONTHS[now.getMonth()]}`;
+  const now=new Date(),DAYS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],MONTHS=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('hoy-date').textContent=`${DAYS[now.getDay()]}, ${now.getDate()} de ${MONTHS[now.getMonth()]}`;
+  if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
-
-document.addEventListener('DOMContentLoaded', init);
-
-// ════════════ SERVICE WORKER ════════════
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  });
-}
+document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
