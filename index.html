@@ -711,28 +711,24 @@ function renderDaySelector(){const LBLS=['D','L','M','X','J','V','S'];document.g
 function toggleDay(i){if(selectedActiveDays.includes(i)){if(selectedActiveDays.length===1)return;selectedActiveDays=selectedActiveDays.filter(d=>d!==i);}else selectedActiveDays=[...selectedActiveDays,i].sort((a,b)=>a-b);renderDaySelector();}
 function saveHabit(){const name=document.getElementById('inp-habit-name').value.trim();if(!name){showToast('Añade un nombre');return;}const emoji=document.getElementById('inp-habit-emoji').value||'✓';const habits=DB.habits();if(editingHabitId){const idx=habits.findIndex(h=>h.id===editingHabitId);if(idx>-1)habits[idx]={...habits[idx],name,icon:emoji,activeDays:[...selectedActiveDays]};}else habits.push({id:'h'+Date.now(),name,icon:emoji,activeDays:[...selectedActiveDays]});DB.setHabits(habits);closeModal('modal-habit');renderEditHabits();showToast(editingHabitId?'Hábito actualizado ✓':'Hábito añadido ✓');}
 
-// ═══════════════ DAILY EDGE — PERSISTENCIA COMPLETA ═══════════════
-// deState ya NO existe en memoria: todo se lee/escribe en DB.edge(todayStr())
-// Estructura del objeto edge diario:
-// { done:0-3, quizAnswered:bool, quizAnswer:int|null, caseDecision:'go'|'nogo'|null,
-//   caseUnlocked:bool, takeText:'', caseText:'', completed:bool }
+// ═══════════════ DAILY EDGE — SIN TEXTO LIBRE ═══════════════
+// Estado: { done, conceptDone, quizAnswered, quizAnswer, caseDecision, caseDone, completed }
 
 function getEdgeState(){
   const s=DB.edge(todayStr());
-  return {
+  return{
     done:         s.done         ?? 0,
+    conceptDone:  s.conceptDone  ?? false,
     quizAnswered: s.quizAnswered ?? false,
     quizAnswer:   s.quizAnswer   ?? null,
     caseDecision: s.caseDecision ?? null,
-    caseUnlocked: s.caseUnlocked ?? false,
-    takeText:     s.takeText     ?? '',
-    caseText:     s.caseText     ?? '',
+    caseDone:     s.caseDone     ?? false,
     completed:    s.completed    ?? false,
   };
 }
 function saveEdgeState(patch){
-  const current=DB.edge(todayStr());
-  DB.setEdge(todayStr(),{...current,...patch});
+  const cur=DB.edge(todayStr());
+  DB.setEdge(todayStr(),{...cur,...patch});
 }
 
 function renderEdge(){
@@ -753,93 +749,145 @@ function updateEdgeProgress(){
   const st=getEdgeState();
   document.getElementById('de-prog-count').textContent=`${st.done} / 3`;
   document.getElementById('de-prog-fill').style.width=(st.done/3*100)+'%';
-  if(st.done>=3){
-    document.getElementById('de-completion').classList.add('show');
-    saveEdgeState({done:3,completed:true});
-  }
+  if(st.done>=3){document.getElementById('de-completion').classList.add('show');saveEdgeState({completed:true});}
 }
 
 function renderEdgeCards(){
   const st=getEdgeState();
-  const wrap=document.getElementById('de-cards-wrap');wrap.innerHTML='';
+  const wrap=document.getElementById('de-cards-wrap');
+  wrap.innerHTML='';
 
-  // ── Card 1: Concepto + Take ──
-  const c1done=st.done>=1,c1=document.createElement('div');
+  // ── CARD 1: CONCEPTO DEL DÍA (solo lectura + Entendido) ──
+  // Banco de conceptos — rota por día del año
+  const CONCEPTS=[
+    {title:'Pricing Power',tag:'Ventaja competitiva',body:'La capacidad de subir precios sin perder clientes. Es el indicador más fiable de ventaja competitiva real: si el cliente no tiene alternativas, el vendedor tiene el poder.',curiosity:'Buffett invirtió en Coca-Cola en 1988 precisamente por esto. Desde entonces, el precio de una lata ha subido más del 300% y la demanda no ha caído.'},
+    {title:'Free Cash Flow',tag:'Contabilidad',body:'El dinero que le queda a una empresa después de pagar todos sus gastos operativos e inversiones en capital (capex). Es el efectivo real disponible — sin trucos contables.',curiosity:'Amazon tuvo FCF negativo durante casi una década. Los inversores que entendieron que era por inversión en infraestructura, y no por pérdidas reales, multiplicaron su dinero.'},
+    {title:'EBITDA',tag:'Métricas',body:'Beneficio antes de intereses, impuestos, depreciación y amortización. Mide la rentabilidad operativa pura del negocio, sin el efecto de cómo está financiado o qué activos tiene.',curiosity:'Buffett lo llama "earnings before bad stuff" — ganancias antes de las cosas malas. Es útil para comparar empresas, pero peligroso si ignoras el capex.'},
+    {title:'Margen bruto',tag:'Contabilidad',body:'Porcentaje de los ingresos que queda después de restar el coste directo de los productos o servicios vendidos. Cuanto más alto, más dinero tiene la empresa para cubrir el resto de gastos.',curiosity:'Empresas de software como Notion o Figma tienen márgenes brutos del 80–90%. Una fábrica de coches rara vez supera el 15%. La diferencia está en los costes variables.'},
+    {title:'Burn rate',tag:'Startups',body:'La velocidad a la que una startup gasta su dinero. Si tienes 1M€ en caja y gastas 100k€ al mes, tu burn rate es 100k€ y tu runway es 10 meses.',curiosity:'Durante la crisis de 2022, muchas startups pasaron de "crecer rápido" a "sobrevivir". Las que sobrevivieron sabían exactamente su burn rate. Las que no, cerraron en semanas.'},
+    {title:'Runway',tag:'Startups',body:'El tiempo que le queda a una empresa antes de quedarse sin dinero, al ritmo de gasto actual. Se calcula dividiendo la caja disponible entre el burn rate mensual.',curiosity:'La regla no escrita en Silicon Valley: empieza a levantar ronda cuando tienes 9 meses de runway, no cuando tienes 3. Para entonces ya es demasiado tarde.'},
+    {title:'Cap table',tag:'Startups',body:'La tabla de capitalización: quién tiene qué porcentaje de la empresa. Incluye fundadores, inversores, empleados con opciones y cualquier otro accionista.',curiosity:'WhatsApp fue adquirida por Facebook por 19.000M$. Los 55 empleados que tenían opciones se repartieron ~3.000M$. Un cap table bien gestionado puede cambiar vidas.'},
+    {title:'Dilución',tag:'Startups',body:'Reducción del porcentaje de propiedad de los accionistas existentes cuando la empresa emite nuevas acciones. Al entrar nuevos inversores, el pastel se divide en más trozos.',curiosity:'Un fundador que arranca con el 100% puede terminar con el 10–15% tras varias rondas. Si la empresa vale 100M€, ese 15% vale 15M€. La dilución no es mala si el pastel crece.'},
+    {title:'Valoración pre-money',tag:'Inversión',body:'El valor de una empresa antes de recibir la nueva inversión. Si una startup se valora en 10M€ pre-money y entra 1M€, la valoración post-money es 11M€.',curiosity:'Airbnb fue rechazada por inversores con una valoración de 1,5M$ en 2009. En su salida a bolsa en 2020, valía 47.000M$. La valoración es una negociación, no una ciencia exacta.'},
+    {title:'Term sheet',tag:'Inversión',body:'El documento no vinculante que resume los términos principales de una inversión: valoración, porcentaje, derechos de los inversores y condiciones clave. Es el punto de partida de la negociación.',curiosity:'Un term sheet con cláusulas agresivas de liquidación preferente puede hacer que los fundadores reciban 0€ en una venta, aunque la empresa se venda por más de lo invertido.'},
+    {title:'MOAT',tag:'Ventaja competitiva',body:'La ventaja competitiva duradera de una empresa — como el foso de agua que rodea un castillo. Puede ser una marca, tecnología, efectos de red, costes de cambio o economías de escala.',curiosity:'Buffett lleva 60 años buscando empresas con moat. Su test favorito: "¿Le daría yo 1.000M$ a un competidor para destruir este negocio?" Si la respuesta es no, hay moat.'},
+    {title:'Efecto red',tag:'Ventaja competitiva',body:'Cuando el valor de un producto o servicio aumenta a medida que más personas lo usan. El mejor foso competitivo que existe: cada nuevo usuario hace el producto mejor para todos.',curiosity:'WhatsApp, LinkedIn, Visa, Airbnb. Todos tienen efecto red. Es casi imposible competir contra ellos una vez que alcanzaron masa crítica — aunque tengas más dinero y mejor tecnología.'},
+    {title:'LTV / CAC',tag:'Métricas',body:'LTV (Lifetime Value): cuánto ingresa una empresa de un cliente a lo largo de toda su relación. CAC (Customer Acquisition Cost): cuánto cuesta conseguirlo. Un negocio sano tiene LTV ≥ 3x CAC.',curiosity:'Muchas startups de 2021 tenían CAC de 200€ y LTV de 80€. Perdían dinero en cada cliente. Crecían rápido, sí — pero hacia el abismo.'},
+    {title:'Churn rate',tag:'Métricas',body:'El porcentaje de clientes o ingresos que una empresa pierde en un período. Un churn del 5% mensual parece pequeño — pero significa perder el 46% de tus clientes en un año.',curiosity:'Netflix tiene un churn de ~2% mensual. Muchas apps de consumo superan el 10%. La diferencia está en el hábito: si el producto es parte de tu rutina diaria, no lo cancelas.'},
+    {title:'ARR',tag:'Métricas',body:'Annual Recurring Revenue: los ingresos recurrentes anualizados. Es la métrica clave para empresas SaaS — muestra cuánto dinero entra de forma predecible cada año.',curiosity:'Salesforce tardó 10 años en llegar a 1.000M$ de ARR. Snowflake lo hizo en 7. Datadog en 5. Cada generación de SaaS escala más rápido — los modelos de distribución mejoran.'},
+    {title:'Unit economics',tag:'Métricas',body:'El análisis de rentabilidad a nivel de una sola unidad de negocio — un cliente, un pedido, una suscripción. Si las unit economics son negativas, escalar solo amplifica las pérdidas.',curiosity:'Uber tardó años en tener unit economics positivas por viaje. Apostaron a que la escala las mejoraría — y lo hizo. Pero muchas startups asumen esto sin comprobarlo, y se equivocan.'},
+    {title:'Liquidez',tag:'Mercados',body:'La facilidad con la que un activo puede convertirse en efectivo sin afectar significativamente su precio. Un piso en Madrid tiene baja liquidez; una acción de Apple, alta.',curiosity:'En la crisis de 2008, activos que parecían líquidos dejaron de serlo de golpe. La liquidez es una ilusión en tiempos de pánico — todo el mundo quiere salir por la misma puerta.'},
+    {title:'Drawdown',tag:'Mercados',body:'La caída máxima desde un pico hasta el valle siguiente. Si tu cartera valía 100k€, cayó a 60k€ y se recuperó, sufriste un drawdown del 40%.',curiosity:'El S&P 500 ha tenido drawdowns superiores al 50% en dos ocasiones en los últimos 25 años. Los inversores que vendieron en el valle convirtieron pérdidas temporales en permanentes.'},
+    {title:'Alfa',tag:'Mercados',body:'El exceso de rentabilidad que genera un gestor o estrategia por encima del mercado de referencia. Si el mercado sube un 10% y tú generas un 15%, tu alfa es 5%.',curiosity:'Más del 90% de los fondos de gestión activa no generan alfa consistente a 10 años. Por eso Buffett apostó 1M$ a que un fondo indexado superaría a cualquier hedge fund en 10 años — y ganó.'},
+    {title:'Beta',tag:'Mercados',body:'La sensibilidad del precio de un activo a los movimientos del mercado. Beta de 1 = se mueve igual que el mercado. Beta de 2 = sube y baja el doble. Beta de 0.5 = mucho menos volátil.',curiosity:'El oro tiene beta negativa respecto a la renta variable. Por eso muchos inversores lo usan como cobertura — cuando las bolsas caen, el oro tiende a subir.'},
+    {title:'Due diligence',tag:'Inversión',body:'El proceso de investigación exhaustiva antes de hacer una inversión. Analizar los estados financieros, el equipo, el mercado, los clientes, los contratos y los riesgos legales.',curiosity:'SoftBank invirtió 4.400M$ en WeWork sin hacer una due diligence rigurosa. Cuando la hicieron de verdad, antes de la salida a bolsa, el valor se desplomó de 47.000M$ a menos de 3.000M$.'},
+    {title:'Carta de Bezos a accionistas',tag:'Cultura inversora',body:'Cada año desde 1997, Jeff Bezos escribía una carta a los accionistas de Amazon explicando su filosofía. Son consideradas el mejor documento sobre gestión empresarial a largo plazo.',curiosity:'En todas las cartas incluía la de 1997 como anexo, para recordar que nada había cambiado: "Es siempre el Día 1." Cuando algo funciona, no lo cambies.'},
+    {title:'Riesgo vs. incertidumbre',tag:'Conceptos clave',body:'Riesgo: no sabes qué va a pasar, pero sabes las probabilidades. Incertidumbre: no sabes ni las probabilidades. Los mercados financieros mezclan ambos constantemente.',curiosity:'Frank Knight describió esta diferencia en 1921. Seguros de coche = riesgo calculable. Inversión en startups en mercados nuevos = incertidumbre pura. Los mejores inversores son cómodos con la segunda.'},
+    {title:'Compounding',tag:'Conceptos clave',body:'El interés compuesto: ganar rendimientos sobre los rendimientos anteriores. Einstein lo llamó "la octava maravilla del mundo". El tiempo es el ingrediente más importante.',curiosity:'Warren Buffett tiene el 99% de su riqueza acumulada después de los 50 años. No es que ganara más — es que el compounding necesita tiempo para explotar. Empezar antes es la única ventaja real.'},
+    {title:'Coste de oportunidad',tag:'Conceptos clave',body:'Lo que renuncias al elegir una opción sobre otra. Si tienes 10.000€ en una cuenta al 0% cuando el mercado sube un 10%, tu coste de oportunidad es 1.000€ aunque no hayas "perdido" dinero.',curiosity:'Buffett usa el coste de oportunidad como filtro: "¿Esta inversión es mejor que comprar más acciones de mis mejores ideas actuales?" Si la respuesta es no, no invierte.'},
+    {title:'Reversión a la media',tag:'Mercados',body:'La tendencia de los precios, rentabilidades o métricas a volver a su promedio histórico con el tiempo. Lo que sube mucho tiende a bajar; lo que cae mucho tiende a recuperarse.',curiosity:'Las acciones más rentables del S&P en un año tienden a ser de las peores al año siguiente. Los gestores "estrella" raramente repiten. La reversión a la media es implacable.'},
+    {title:'Sesgo de supervivencia',tag:'Conceptos clave',body:'El error de analizar solo lo que sobrevivió y olvidar lo que fracasó. Vemos los casos de éxito, no el cementerio de los que fracasaron siguiendo la misma estrategia.',curiosity:'¿Cuántas startups que siguieron la estrategia de Amazon conoces? Solo Amazon. Las otras mil que lo intentaron no las recuerdas porque desaparecieron. El sesgo de superviviente distorsiona todo.'},
+    {title:'Asimetría de información',tag:'Mercados',body:'Cuando una de las partes de una transacción tiene más información que la otra. En mercados financieros, la asimetría es la fuente de casi todas las ventajas — y de casi todos los fraudes.',curiosity:'El trading con información privilegiada existe porque la asimetría de información da una ventaja enorme. Por eso está prohibido. SAC Capital pagó 1.800M$ en multas por usarla sistemáticamente.'},
+    {title:'Flujo de caja operativo',tag:'Contabilidad',body:'El dinero generado por las operaciones del negocio, excluyendo inversiones y financiación. Es más difícil de manipular que el beneficio neto y refleja mejor la salud real del negocio.',curiosity:'Enron tenía beneficios contables positivos mientras su flujo de caja operativo era negativo durante años. Los analistas que miraron el FCF en vez del beneficio detectaron el fraude antes de que explotara.'},
+    {title:'WACC',tag:'Valoración',body:'Weighted Average Cost of Capital — el coste medio ponderado de capital. Es la tasa mínima de rentabilidad que debe generar una empresa para crear valor para sus accionistas.',curiosity:'Si una empresa tiene un WACC del 10% y sus proyectos generan un 8%, está destruyendo valor aunque tenga beneficios. Amazon durante años generó retornos muy superiores a su WACC — por eso el mercado la valoraba tan alto.'},
+    {title:'P/E ratio',tag:'Valoración',body:'Price-to-Earnings: el precio de la acción dividido entre el beneficio por acción. Indica cuánto paga el mercado por cada euro de beneficio. Un P/E de 20x significa que pagas 20€ por cada 1€ de beneficio anual.',curiosity:'El P/E del S&P 500 históricamente oscila entre 10x y 35x. En el pico de la burbuja puntocom llegó a 44x. Cuando las expectativas son muy altas, cualquier decepción provoca caídas brutales.'},
+  ];
+
+  // Seleccionar concepto por día del año (rota cada día, consistente entre usuarios)
+  const dayOfYear=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
+  const concept=CONCEPTS[dayOfYear % CONCEPTS.length];
+
+  const c1=document.createElement('div');
   c1.className='de-card';c1.style.margin='10px 18px';
+  const c1done=st.conceptDone;
   c1.innerHTML=`
     <div class="de-card-head">
-      <span class="de-card-type" style="color:var(--fin);">01 · Concepto + tu take</span>
-      <span class="de-card-status ${c1done?'done':'pending'}">${c1done?'Completado ✓':'Pendiente'}</span>
+      <span class="de-card-type" style="color:var(--fin);">01 · Concepto del día</span>
+      <span class="de-card-status ${c1done?'done':'pending'}">${c1done?'Leído ✓':'Pendiente'}</span>
     </div>
-    <div class="de-concept-title">Pricing Power</div>
-    <div class="de-concept-body">La capacidad de subir precios sin perder clientes. El indicador más fiable de ventaja competitiva real. Si no tienes alternativas, el vendedor tiene el poder.<br><br>Buffett: <em>"el mejor negocio es el que puede subir precios sin rezar."</em></div>
-    <div class="de-tag" style="background:var(--fin-bg);color:var(--fin);">Ventaja competitiva</div>
-    <div class="de-take-section">
-      <div class="de-take-lbl">Tu take</div>
-      <div class="de-take-q">¿En qué empresa o sector ves más pricing power hoy? ¿Por qué?</div>
+    <div class="de-concept-title">${concept.title}</div>
+    <div class="de-concept-body">${concept.body}</div>
+    <div style="margin:0 16px 12px;padding:11px 13px;background:var(--bg);border-radius:11px;border-left:3px solid var(--gold);">
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;">¿Sabías que…</div>
+      <div style="font-size:12px;font-weight:500;color:var(--text3);line-height:1.6;">${concept.curiosity}</div>
+    </div>
+    <div class="de-tag" style="background:var(--fin-bg);color:var(--fin);">${concept.tag}</div>
+    <div style="padding:0 16px 14px;">
       ${c1done
-        ? `<div class="de-feedback show">
-            <span class="de-fb-badge high">Buen razonamiento</span>
-            <div class="de-fb-txt"><strong>Has identificado bien el núcleo.</strong> El pricing power más duradero viene de switching costs estructurales o identidad de marca. Apple puede subir precios año tras año; Spotify aún lucha para justificar cada subida.</div>
-            ${st.takeText?`<div style="margin-top:10px;padding:9px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text3);line-height:1.5;font-style:italic;">"${st.takeText}"</div>`:''}
-           </div>`
-        : `<textarea class="de-textarea" id="take-input" placeholder="Escribe tu razonamiento en 2-3 líneas...">${st.takeText||''}</textarea>
-           <button class="de-send-btn" onclick="submitTake()">Enviar y ver análisis →</button>`
+        ?`<div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--fin);">✓ Concepto registrado</div>`
+        :`<button class="de-send-btn" style="background:var(--fin);" onclick="markConceptDone()">Entendido →</button>`
       }
     </div>`;
   wrap.appendChild(c1);
 
-  // ── Card 2: Quiz ──
-  const c2done=st.done>=2,c2unlocked=st.done>=1;
+  // ── CARD 2: QUIZ ──
+  const c2=document.createElement('div');
+  c2.className='de-card';c2.style.margin='10px 18px';
+  const c2unlocked=st.conceptDone,c2done=st.quizAnswered;
   const CORRECT=0;
-  const EXP=[
-    '✓ <strong>Correcto.</strong> El EBITDA ignora el capex. Con inversión agresiva puedes tener EBITDA positivo y FCF negativo justificadamente — si ese capex genera retornos. Amazon lo hizo 15 años.',
-    'Incorrecto. La manipulación de accruals es difícil de mantener 3 años. Lo más común es capex intensivo de crecimiento.',
-    'Incorrecto. El EBITDA es útil cuando el capex es bajo. El error es usarlo sin mirar el FCF.'
+  const OPTS=[
+    'Alta inversión en capex de crecimiento — normal en empresas que escalan',
+    'Manipulación contable de accruals — el EBITDA está inflado artificialmente',
+    'El EBITDA siempre es un indicador engañoso por definición'
   ];
-  const OPTS=['Alta inversión en capex de crecimiento — positivo si genera retornos','Manipulación contable de accruals','El EBITDA siempre es engañoso'];
-  const c2=document.createElement('div');c2.className='de-card';c2.style.margin='10px 18px';
-  let quizInner='';
+  const EXP=[
+    'El EBITDA no incluye el capex. Una empresa que invierte agresivamente puede tener EBITDA positivo y FCF negativo de forma completamente justificada — si ese capex genera retornos. Amazon lo hizo 15 años.',
+    'Podría ocurrir, pero es muy difícil de sostener 3 años. La causa más habitual es el capex intensivo de crecimiento, no manipulación contable.',
+    'El EBITDA es útil como proxy de caja operativa cuando el capex es bajo. El problema es usarlo sin contrastar con el FCF, no el indicador en sí.'
+  ];
+  let quizBody='';
   if(!c2unlocked){
-    quizInner=`<div class="de-lock"><div class="de-lock-icon">🔒</div><div class="de-lock-txt">Completa el concepto<br>para desbloquear</div></div>`;
+    quizBody=`<div class="de-lock"><div class="de-lock-icon">🔒</div><div class="de-lock-txt">Lee el concepto primero</div></div>`;
   } else {
-    const answered=st.quizAnswered,ua=st.quizAnswer;
+    const ua=st.quizAnswer;
     const optsHtml=OPTS.map((o,i)=>{
       let cls='de-opt';
-      if(answered){cls+=i===CORRECT?' correct':i===ua&&ua!==CORRECT?' wrong':' faded';}
-      const icon=answered?(i===CORRECT?'✓':i===ua&&ua!==CORRECT?'✗':String.fromCharCode(65+i)):String.fromCharCode(65+i);
-      const onclick=answered?'':`onclick="answerQuiz(${i})"`;
-      return`<div class="${cls}" ${onclick}><span class="de-opt-icon">${icon}</span>${o}</div>`;
+      if(c2done){cls+=i===CORRECT?' correct':i===ua?' wrong':' faded';}
+      const icon=c2done?(i===CORRECT?'✓':i===ua?'✗':String.fromCharCode(65+i)):String.fromCharCode(65+i);
+      const click=c2done?'':` onclick="answerQuiz(${i})"`;
+      return`<div class="${cls}"${click}><span class="de-opt-icon">${icon}</span>${o}</div>`;
     }).join('');
-    const explainHtml=answered?`<div class="de-explanation show">${EXP[ua??0]}</div>`:`<div class="de-explanation" id="quiz-explain"></div>`;
-    quizInner=`<div class="de-quiz-body"><div class="de-quiz-q">EBITDA crece +25% anual pero Free Cash Flow lleva 3 años negativo. ¿Explicación más probable?</div><div class="de-opts" id="quiz-opts">${optsHtml}${explainHtml}</div></div>`;
+    const explainHtml=c2done
+      ?`<div class="de-explanation show"><strong>${ua===CORRECT?'Correcto.':'Incorrecto.'}</strong> ${EXP[ua??0]}</div>`
+      :'';
+    quizBody=`<div class="de-quiz-body"><div class="de-quiz-q">Una empresa tiene EBITDA +25% anual pero FCF negativo durante 3 años. ¿Cuál es la explicación más probable?</div><div class="de-opts">${optsHtml}</div>${explainHtml}</div>`;
   }
-  c2.innerHTML=`<div class="de-card-head"><span class="de-card-type" style="color:var(--amber);">02 · Quiz rápido</span><span class="de-card-status ${c2done?'done':c2unlocked?'pending':'locked'}">${c2done?'Correcto ✓':c2unlocked?'Pendiente':'Bloqueado'}</span></div>${quizInner}`;
+  c2.innerHTML=`
+    <div class="de-card-head">
+      <span class="de-card-type" style="color:var(--amber);">02 · Quiz rápido</span>
+      <span class="de-card-status ${c2done?'done':c2unlocked?'pending':'locked'}">${c2done?(st.quizAnswer===CORRECT?'Correcto ✓':'Respondido'):c2unlocked?'Pendiente':'Bloqueado'}</span>
+    </div>${quizBody}`;
   wrap.appendChild(c2);
 
-  // ── Card 3: Go / No Go ──
-  const c3done=st.done>=3,c3unlocked=st.done>=2||st.caseUnlocked;
-  const c3=document.createElement('div');c3.className=`de-card${c3unlocked?' unlocked':''}`;c3.style.margin='10px 18px';
+  // ── CARD 3: GO / NO GO ──
+  const c3=document.createElement('div');
+  const c3unlocked=st.quizAnswered,c3done=st.caseDone;
+  c3.className=`de-card${c3unlocked?' unlocked':''}`;c3.style.margin='10px 18px';
+  const EXPLAIN={
+    go:'Decisión arriesgada. El margen −18% en logística última milla es difícil de revertir — sector intensivo en costes y con poco pricing power. Dos clientes concentran >80% del ARR: si uno cancela, la empresa colapsa. Con 9 meses de runway, la dilución sería muy alta.',
+    nogo:'Decisión correcta. Red flags claros: margen −18% en sector de márgenes estructuralmente bajos, concentración extrema de clientes, y runway insuficiente. Sin pricing power ni escala, el riesgo/retorno no justifica la inversión en esta etapa.'
+  };
   let caseBody='';
   if(c3done){
+    const dec=st.caseDecision,ok=dec==='nogo';
     caseBody=`<div class="de-verdict show">
-      <span class="de-verdict-badge de-verdict-ok">No Go — correcto ✓</span>
-      <div class="de-verdict-txt"><strong>Bien identificado.</strong> Red flags críticos: margen −18% en sector de márgenes estructuralmente bajos, 2 clientes concentran >80% del ARR, y 9 meses de runway implica dilución agresiva. El riesgo/retorno no cuadra.</div>
-      ${st.caseText?`<div style="margin-top:10px;padding:9px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text3);line-height:1.5;font-style:italic;">"${st.caseText}"</div>`:''}
+      <span class="de-verdict-badge ${ok?'de-verdict-ok':'de-verdict-fail'}">${ok?'No Go — decisión acertada ✓':'Go — decisión cuestionable'}</span>
+      <div class="de-verdict-txt">${EXPLAIN[dec]}</div>
     </div>`;
-  } else {
+  } else if(c3unlocked){
+    const dec=st.caseDecision;
     caseBody=`
       <div class="de-dec-btns">
-        <button class="de-dec-btn de-go-btn${st.caseDecision==='go'?' selected':''}" id="btn-go" onclick="pickCase('go')">✓ GO</button>
-        <button class="de-dec-btn de-nogo-btn${st.caseDecision==='nogo'?' selected':''}" id="btn-nogo" onclick="pickCase('nogo')">✗ NO GO</button>
+        <button class="de-dec-btn de-go-btn${dec==='go'?' selected':''}" onclick="pickCase('go')">✓ GO</button>
+        <button class="de-dec-btn de-nogo-btn${dec==='nogo'?' selected':''}" onclick="pickCase('nogo')">✗ NO GO</button>
       </div>
-      <div class="de-arg-wrap${st.caseDecision?' show':''}" id="case-arg-wrap">
-        <textarea class="de-textarea" id="case-arg" placeholder="Escribe tu argumento en 2-3 líneas...">${st.caseText||''}</textarea>
-        <button class="de-submit-btn" onclick="submitCase()">Enviar y ver análisis</button>
-      </div>`;
+      ${dec?`<button class="de-submit-btn" onclick="submitCase()" style="width:100%;margin-top:8px;">Ver explicación →</button>`:''}`;
   }
   c3.innerHTML=`
-    <div class="de-card-head"><span class="de-card-type" style="color:var(--gold);">03 · Go / No Go</span><span class="de-card-status ${c3done?'done':c3unlocked?'pending':'locked'}">${c3done?'Completado ✓':c3unlocked?'Pendiente':'Bloqueado'}</span></div>
+    <div class="de-card-head">
+      <span class="de-card-type" style="color:var(--gold);">03 · Go / No Go</span>
+      <span class="de-card-status ${c3done?'done':c3unlocked?'pending':'locked'}">${c3done?'Completado ✓':c3unlocked?'Pendiente':'Bloqueado'}</span>
+    </div>
     <div class="de-lock"><div class="de-lock-icon">🔒</div><div class="de-lock-txt">Completa el quiz<br>para desbloquear el caso</div></div>
     <div class="de-case-content">
       <div class="de-co">Logística última milla · Serie C</div>
@@ -852,47 +900,38 @@ function renderEdgeCards(){
       </div>
       <div class="de-decision">
         <div class="de-dec-lbl">Tu decisión</div>
-        <div class="de-dec-q">¿Entrarías como inversor en Serie C? Decide y argumenta.</div>
+        <div class="de-dec-q">¿Entrarías como inversor en Serie C?</div>
         ${caseBody}
       </div>
     </div>`;
   wrap.appendChild(c3);
 }
 
-function submitTake(){
-  const val=document.getElementById('take-input')?.value.trim();
-  if(!val){showToast('Escribe tu razonamiento');return;}
+function markConceptDone(){
   const st=getEdgeState();
-  saveEdgeState({done:Math.max(st.done,1),takeText:val});
+  saveEdgeState({conceptDone:true,done:Math.max(st.done,1)});
   updateEdgeProgress();renderEdgeCards();
 }
 function answerQuiz(idx){
   const st=getEdgeState();
   if(st.quizAnswered)return;
-  saveEdgeState({quizAnswered:true,quizAnswer:idx});
-  renderEdgeCards(); // re-render to show result immediately
+  saveEdgeState({quizAnswered:true,quizAnswer:idx,done:Math.max(st.done,2)});
+  updateEdgeProgress();renderEdgeCards();
   setTimeout(()=>{
-    const st2=getEdgeState();
-    saveEdgeState({done:Math.max(st2.done,2),caseUnlocked:true});
-    updateEdgeProgress();renderEdgeCards();
     document.querySelector('#page-edge .de-card:last-of-type')?.scrollIntoView({behavior:'smooth',block:'start'});
-  },700);
+  },350);
 }
 function pickCase(decision){
   saveEdgeState({caseDecision:decision});
-  const bg=document.getElementById('btn-go'),bn=document.getElementById('btn-nogo');
-  if(bg)bg.classList.toggle('selected',decision==='go');
-  if(bn)bn.classList.toggle('selected',decision==='nogo');
-  const wrap=document.getElementById('case-arg-wrap');if(wrap)wrap.classList.add('show');
+  renderEdgeCards();
 }
 function submitCase(){
-  const arg=document.getElementById('case-arg')?.value.trim();
-  if(!arg){showToast('Escribe tu argumento');return;}
   const st=getEdgeState();
   if(!st.caseDecision){showToast('Elige Go o No Go');return;}
-  saveEdgeState({done:3,caseText:arg,completed:true});
+  saveEdgeState({caseDone:true,done:3,completed:true});
   updateEdgeProgress();renderEdgeCards();
 }
+
 
 // ═══════════════ BACKUP — EXPORT / IMPORT ═══════════════
 function exportBackup(){
